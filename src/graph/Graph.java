@@ -11,17 +11,13 @@ import java.util.HashMap;
  * @version 0.1
  */
 public class Graph {
-<<<<<<< HEAD
 
 	/**
 	 * Nodes HashMap
 	 * Very efficient for node search, insert or delete
 	 */
-	HashMap<String, Node> nodes;
-=======
-	
 	protected HashMap<String, Node> nodes;
->>>>>>> origin/fileparser
+
 
 	/**
 	 * Default constructor
@@ -80,10 +76,7 @@ public class Graph {
 		Node n = new Node(nodeLabel);
 		this.addNode(n);
 	}
-<<<<<<< HEAD
 
-=======
-	
 	public Node getNode(String nodeLabel){
 		Node n = nodes.get(nodeLabel);
 		if(n == null){
@@ -96,6 +89,5 @@ public class Graph {
 	public boolean equals(Object graph){
 		return this.getNodes().equals(((Graph) graph).getNodes());
 	}
-	
->>>>>>> origin/fileparser
+
 }
