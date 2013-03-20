@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * This class is representing the graph.
  * It is the main class
- * Only nodes are stored beacause of the search
+ * Only nodes are stored because of the search
  * 
  * @author Hadrien
  * @version 0.1
