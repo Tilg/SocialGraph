@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class Graph {
 	
-	HashMap<String, Node> nodes;
+	protected HashMap<String, Node> nodes;
 
 	public Graph(HashMap<String, Node> nodes) {
 		this.nodes = nodes;
@@ -34,6 +34,19 @@ public class Graph {
 	public void addString(String nodeLabel){
 		Node n = new Node(nodeLabel);
 		this.addNode(n);
+	}
+	
+	public Node getNode(String nodeLabel){
+		Node n = nodes.get(nodeLabel);
+		if(n == null){
+			addString(nodeLabel);
+			n = nodes.get(nodeLabel);
+		}
+		return n;
+	}
+	
+	public boolean equals(Object graph){
+		return this.getNodes().equals(((Graph) graph).getNodes());
 	}
 	
 }

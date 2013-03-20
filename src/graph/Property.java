@@ -34,4 +34,8 @@ public class Property {
 	public void setValues(ArrayList<String> values) {
 		this.values = values;
 	}
+	
+	public boolean equals(Object property){
+		return this.getLabel().equals(((Property) property).getLabel()) && this.getValues().equals(((Property) property).getValues());
+	}
 }

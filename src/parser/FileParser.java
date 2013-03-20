@@ -19,7 +19,6 @@ import graph.Property;;
 
 /**
  * TODO : throw MalFormedFileException
- * TODO : Write Tests
  * This class is useful for parsing a text file 
  * and return a graph
  * @author mathieu_canzerini
@@ -39,8 +38,8 @@ public class FileParser {
 	public static final int FIRST_LINK_DIRECTION_GROUP = 2;
 	public static final int LINK_LABEL_GROUP = 3;
 	public static final int LINK_PROPERTIES_GROUP = 5;
-	public static final int SECOND_LINK_DIRECTION_GROUP = 17;
-	public static final int SECOND_NODE_LABEL_GROUP = 18;
+	public static final int SECOND_LINK_DIRECTION_GROUP = 16;
+	public static final int SECOND_NODE_LABEL_GROUP = 17;
 	public static final int PROPERTY_NAME_GROUP = 1;
 	public static final int PROPERTY_VALUES_GROUP = 1;
 
@@ -85,6 +84,7 @@ public class FileParser {
 		LINE_MATCHER = LINE_PATTERN.matcher(line);
 
 		// get the first node label by parsing the line
+		LINE_MATCHER.find();
 		String firstNodeLabel = LINE_MATCHER.group(FIRST_NODE_LABEL_GROUP);
 
 		// get the first link direction by parsing the line
@@ -106,7 +106,7 @@ public class FileParser {
 		Link firstLink, secondLink;
 		Node firstNode, secondNode;
 		ArrayList<Property> properties = new ArrayList<Property>();
-		Direction firstLinkDirection = null, secondLinkDirection = null;
+		Direction firstLinkDirection, secondLinkDirection;
 
 		// if link has properties
 		if(linkProperties != null){
@@ -115,26 +115,33 @@ public class FileParser {
 		}
 
 		//set the two links directions 
-		setDirections(stringFirstLinkDirection, stringSecondLinkDirection, firstLinkDirection, secondLinkDirection); // Maybe does'nt work
+		firstLinkDirection = getDirection(stringFirstLinkDirection, stringSecondLinkDirection);
+		secondLinkDirection = getReverseDirection(firstLinkDirection);
 
 		// first node construction
 		// if the node already exists
 		if (graph.getNodes().containsKey(firstNodeLabel)){
-			firstNode = graph.getNodes().get(firstNodeLabel);
+			//firstNode = graph.getNodes().get(firstNodeLabel);
+			firstNode = graph.getNode(firstNodeLabel);
 		} else {
 			// if the node does not already exist	
-			firstNode = new Node(firstNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
-			graph.addNode(firstNode);
+			//firstNode = new Node(firstNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
+			//graph.addNode(firstNode);
+			graph.addString(firstNodeLabel);
+			firstNode = graph.getNode(firstNodeLabel);
 		}
 
 		// second node construction
 		// if the node already exists
 		if (graph.getNodes().containsKey(secondNodeLabel)){
-			secondNode = graph.getNodes().get(secondNodeLabel);
+			//secondNode = graph.getNodes().get(secondNodeLabel);
+			secondNode = graph.getNode(secondNodeLabel);
 		} else {
 			// if the node does not already exist	
-			secondNode = new Node(secondNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
-			graph.addNode(secondNode);
+			//secondNode = new Node(secondNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
+			//graph.addNode(secondNode);
+			graph.addString(secondNodeLabel);
+			secondNode = graph.getNode(secondNodeLabel);
 		}
 
 		firstLink = new Link(linkLabel, secondNode, properties, firstLinkDirection);
@@ -186,6 +193,7 @@ public class FileParser {
 		PROPERTY_NAME_MATCHER = PROPERTY_NAME_PATTERN.matcher(stringProperty);
 
 		// get the name of the property
+		PROPERTY_NAME_MATCHER.find();
 		String propertyName = PROPERTY_NAME_MATCHER.group(PROPERTY_NAME_GROUP);
 		return propertyName;
 	}
@@ -196,9 +204,10 @@ public class FileParser {
 	 * @return an array list of the property values
 	 */
 	public ArrayList<String> parsePropertyValues(String stringProperty){
-		PROPERTY_VALUES_MATCHER = PROPERTY_NAME_PATTERN.matcher(stringProperty);
+		PROPERTY_VALUES_MATCHER = PROPERTY_VALUES_PATTERN.matcher(stringProperty);
 
 		// get the values of the property (example : a,b,c)
+		PROPERTY_VALUES_MATCHER.find();
 		String propertyValues = PROPERTY_VALUES_MATCHER.group(PROPERTY_VALUES_GROUP);
 
 		// split with ',' and add the different values in the array list
@@ -208,25 +217,45 @@ public class FileParser {
 	}
 
 	/**
-	 * set the two links directions
+	 * get a direction using the two String directions
 	 * @param stringFirstLinkDirection first read direction (can be <-- or --)
 	 * @param stringSecondLinkDirection second read direction (can be -- or -->)
 	 * @param firstLinkDirection the first link Direction (IN, OUT or NONO)
 	 * @param secondLinkDirection the second link Direction (IN, OUT or NONO)
+	 * @return IN, OUT, or NONE
 	 */
-	public void setDirections(String stringFirstLinkDirection, String stringSecondLinkDirection, Direction firstLinkDirection, Direction secondLinkDirection){
+	public Direction getDirection(String stringFirstLinkDirection, String stringSecondLinkDirection) {
+		Direction direction;
 		// if it is an input link
 		if (stringFirstLinkDirection.equals("<--")) {
-			firstLinkDirection = Direction.IN;
-			secondLinkDirection = Direction.OUT;
+			direction = Direction.IN;
 		} else if(stringSecondLinkDirection.equals("-->")){
 			// if it is an output link
-			firstLinkDirection = Direction.OUT;
-			secondLinkDirection = Direction.IN;
+			direction = Direction.OUT;
 		} else {
 			// if it is an input/output link
-			firstLinkDirection = Direction.NONE;
-			secondLinkDirection = Direction.NONE;
+			direction = Direction.NONE;
 		}
+		return direction;
+	}
+	
+	/**
+	 * get the reverse direction of the parameter
+	 * @param direction the direction to reverse
+	 * @return IN, OUT, or NONE
+	 */
+	public Direction getReverseDirection(Direction direction) {
+		Direction reverseDirection;
+		// if it is an input link
+		if (direction == Direction.OUT) {
+			reverseDirection = Direction.IN;
+		} else if(direction == Direction.IN){
+			// if it is an output link
+			reverseDirection = Direction.OUT;
+		} else {
+			// if it is an input/output link
+			reverseDirection = Direction.NONE;
+		}
+		return reverseDirection;
 	}
 }
