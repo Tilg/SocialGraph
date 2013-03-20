@@ -104,4 +104,11 @@ public class Node {
 		return s;
 	}
 	
+<<<<<<< HEAD
 }
+=======
+	public boolean equals(Object node){
+		return this.getLabel().equals(((Node) node).getLabel()) && this.getLinks().equals(((Node) node).getLinks());
+	}
+}
+>>>>>>> origin/fileparser

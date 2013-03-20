@@ -152,4 +152,12 @@ public class Link {
 		this.direction = direction;
 	} 
 	
+<<<<<<< HEAD
 }
+=======
+	public boolean equals(Object link){
+		return this.getLabel().equals(((Link) link).getLabel()) //&& this.getDestination() == ((Link) link).getDestination()
+				&& this.getProperties().equals(((Link) link).getProperties()) && this.getDirection() == ((Link) link).getDirection();
+	}
+}
+>>>>>>> origin/fileparser
