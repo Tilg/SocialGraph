@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import exception.MalFormedFileException;
+
 import graph.Direction;
 import graph.Link;
 import graph.Node;
@@ -26,7 +28,7 @@ import graph.Property;;
  */
 
 public class FileParser {
-	public static final Pattern LINE_PATTERN = Pattern.compile("^([^-]+)(--|<--)([a-zA-Z0-9_]+)((\\[([a-zA-Z0-9_ ]+))(=(([a-zA-Z0-9_ ]+)(,[a-zA-Z0-9_ ]+)*))((;([a-zA-Z0-9_ ])+)(=[a-zA-Z0-9_ ]+(,[a-zA-Z0-9_ ]+)*))*\\])?(-->|--)([^-]+)");
+	public static final Pattern LINE_PATTERN = Pattern.compile("^([^-<]+)(--|<--)([a-zA-Z0-9_]+)((\\[([a-zA-Z0-9_ ]+))(=(([a-zA-Z0-9_ ]+)(,[a-zA-Z0-9_ ]+)*))((;([a-zA-Z0-9_ ])+)(=[a-zA-Z0-9_ ]+(,[a-zA-Z0-9_ ]+)*))*\\])?(-->|--)([^-]+)");
 	public static final Pattern PROPERTIES_PATTERN = Pattern.compile("([a-zA-Z0-9_ ]+)=(([a-zA-Z0-9_ ]+)(,[a-zA-Z0-9_ ]+)*)");
 	public static final Pattern PROPERTY_NAME_PATTERN = Pattern.compile("([a-zA-Z0-9_ ]+)=");
 	public static final Pattern PROPERTY_VALUES_PATTERN = Pattern.compile("=(([a-zA-Z0-9_ ]+)(,[a-zA-Z0-9_ ]+)*)");
@@ -37,7 +39,7 @@ public class FileParser {
 	public static final int FIRST_NODE_LABEL_GROUP = 1;
 	public static final int FIRST_LINK_DIRECTION_GROUP = 2;
 	public static final int LINK_LABEL_GROUP = 3;
-	public static final int LINK_PROPERTIES_GROUP = 5;
+	public static final int LINK_PROPERTIES_GROUP = 4;
 	public static final int SECOND_LINK_DIRECTION_GROUP = 16;
 	public static final int SECOND_NODE_LABEL_GROUP = 17;
 	public static final int PROPERTY_NAME_GROUP = 1;
@@ -53,7 +55,6 @@ public class FileParser {
 	public Graph parseFile(String fileName) {
 		// graph initialization with an empty hash map 
 		Graph graph = new Graph(new HashMap<String, Node>()); // better an empty constructor
-
 		try {
 			// Construction of the fileInputStream with the file name
 			FileInputStream fileInputStream = new FileInputStream(fileName);
@@ -81,83 +82,100 @@ public class FileParser {
 	 * @param graph the graph to construct
 	 */
 	public void parseLine(String line, Graph graph){
-		LINE_MATCHER = LINE_PATTERN.matcher(line);
+		try {
+			LINE_MATCHER = LINE_PATTERN.matcher(line);
+			boolean wellFormedFile = true;
 
-		// get the first node label by parsing the line
-		LINE_MATCHER.find();
-		String firstNodeLabel = LINE_MATCHER.group(FIRST_NODE_LABEL_GROUP);
+			// matches the line with the pattern
+			wellFormedFile = LINE_MATCHER.find();
 
-		// get the first link direction by parsing the line
-		String stringFirstLinkDirection = LINE_MATCHER.group(FIRST_LINK_DIRECTION_GROUP);
+			if (!wellFormedFile) {
+				throw new MalFormedFileException();
+			}
 
-		// get the link label by parsing the line
-		String linkLabel = LINE_MATCHER.group(LINK_LABEL_GROUP);
+			// get the first node label by parsing the line
+			String firstNodeLabel = LINE_MATCHER.group(FIRST_NODE_LABEL_GROUP);
 
-		// get the link properties label by parsing the line
-		String linkProperties = LINE_MATCHER.group(LINK_PROPERTIES_GROUP);
+			// get the first link direction by parsing the line
+			String stringFirstLinkDirection = LINE_MATCHER.group(FIRST_LINK_DIRECTION_GROUP);
 
-		// get the second link direction by parsing the line
-		String stringSecondLinkDirection = LINE_MATCHER.group(SECOND_LINK_DIRECTION_GROUP);
+			// get the link label by parsing the line
+			String linkLabel = LINE_MATCHER.group(LINK_LABEL_GROUP);
 
-		// get the second node label by parsing the line
-		String secondNodeLabel = LINE_MATCHER.group(SECOND_NODE_LABEL_GROUP);
+			// get the link properties label by parsing the line
+			String linkProperties = LINE_MATCHER.group(LINK_PROPERTIES_GROUP);
 
+			// get the second link direction by parsing the line
+			String stringSecondLinkDirection = LINE_MATCHER.group(SECOND_LINK_DIRECTION_GROUP);
 
-		Link firstLink, secondLink;
-		Node firstNode, secondNode;
-		ArrayList<Property> properties = new ArrayList<Property>();
-		Direction firstLinkDirection, secondLinkDirection;
+			// get the second node label by parsing the line
+			String secondNodeLabel = LINE_MATCHER.group(SECOND_NODE_LABEL_GROUP);
 
-		// if link has properties
-		if(linkProperties != null){
-			// get the list of link properties
-			properties = parseProperties(linkProperties);
+			if (firstNodeLabel == null || stringFirstLinkDirection == null || linkLabel == null 
+					|| stringSecondLinkDirection == null || secondNodeLabel == null) {
+				throw new MalFormedFileException();
+			}
+			
+			Link firstLink, secondLink;
+			Node firstNode, secondNode;
+			ArrayList<Property> properties = new ArrayList<Property>();
+			Direction firstLinkDirection, secondLinkDirection;
+
+			// if link has properties
+			if(linkProperties != null){
+				// get the list of link properties
+				properties = parseProperties(linkProperties);
+			}
+
+			//set the two links directions 
+			firstLinkDirection = getDirection(stringFirstLinkDirection, stringSecondLinkDirection);
+			secondLinkDirection = getReverseDirection(firstLinkDirection);
+
+			// first node construction
+			// if the node already exists
+			if (graph.getNodes().containsKey(firstNodeLabel)){
+				//firstNode = graph.getNodes().get(firstNodeLabel);
+				firstNode = graph.getNode(firstNodeLabel);
+			} else {
+				// if the node does not already exist	
+				//firstNode = new Node(firstNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
+				//graph.addNode(firstNode);
+				graph.addString(firstNodeLabel);
+				firstNode = graph.getNode(firstNodeLabel);
+			}
+
+			// second node construction
+			// if the node already exists
+			if (graph.getNodes().containsKey(secondNodeLabel)){
+				//secondNode = graph.getNodes().get(secondNodeLabel);
+				secondNode = graph.getNode(secondNodeLabel);
+			} else {
+				// if the node does not already exist	
+				//secondNode = new Node(secondNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
+				//graph.addNode(secondNode);
+				graph.addString(secondNodeLabel);
+				secondNode = graph.getNode(secondNodeLabel);
+			}
+
+			firstLink = new Link(linkLabel, secondNode, properties, firstLinkDirection);
+			secondLink = new Link(linkLabel, firstNode, properties, secondLinkDirection);
+
+			firstNode.getLinks().add(firstLink);
+			secondNode.getLinks().add(secondLink);
+		} catch (MalFormedFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(0);
 		}
-
-		//set the two links directions 
-		firstLinkDirection = getDirection(stringFirstLinkDirection, stringSecondLinkDirection);
-		secondLinkDirection = getReverseDirection(firstLinkDirection);
-
-		// first node construction
-		// if the node already exists
-		if (graph.getNodes().containsKey(firstNodeLabel)){
-			//firstNode = graph.getNodes().get(firstNodeLabel);
-			firstNode = graph.getNode(firstNodeLabel);
-		} else {
-			// if the node does not already exist	
-			//firstNode = new Node(firstNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
-			//graph.addNode(firstNode);
-			graph.addString(firstNodeLabel);
-			firstNode = graph.getNode(firstNodeLabel);
-		}
-
-		// second node construction
-		// if the node already exists
-		if (graph.getNodes().containsKey(secondNodeLabel)){
-			//secondNode = graph.getNodes().get(secondNodeLabel);
-			secondNode = graph.getNode(secondNodeLabel);
-		} else {
-			// if the node does not already exist	
-			//secondNode = new Node(secondNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
-			//graph.addNode(secondNode);
-			graph.addString(secondNodeLabel);
-			secondNode = graph.getNode(secondNodeLabel);
-		}
-
-		firstLink = new Link(linkLabel, secondNode, properties, firstLinkDirection);
-		secondLink = new Link(linkLabel, firstNode, properties, secondLinkDirection);
-
-		firstNode.getLinks().add(firstLink);
-		secondNode.getLinks().add(secondLink);
-
 	}
 
 	/**
 	 * parse properties
 	 * @param properties 
 	 * @return an array list of the properties
+	 * @throws MalFormedFileException 
 	 */
-	public ArrayList<Property> parseProperties(String stringProperties){
+	public ArrayList<Property> parseProperties(String stringProperties) throws MalFormedFileException{
 		ArrayList<Property> properties = new ArrayList<Property>();
 		PROPERTIES_MATCHER = PROPERTIES_PATTERN.matcher(stringProperties);
 		String stringProperty;
@@ -180,7 +198,10 @@ public class FileParser {
 			property = new Property(propertyName, propertyValues);
 			properties.add(property);
 		}
-
+		
+		if (properties.isEmpty()) {
+			throw new MalFormedFileException();
+		}
 		return properties;
 	}
 
@@ -188,13 +209,18 @@ public class FileParser {
 	 * parse property name
 	 * @param properties 
 	 * @return an array list of the property name
+	 * @throws MalFormedFileException 
 	 */
-	public String parsePropertyName(String stringProperty){
+	public String parsePropertyName(String stringProperty) throws MalFormedFileException{
 		PROPERTY_NAME_MATCHER = PROPERTY_NAME_PATTERN.matcher(stringProperty);
-
+		boolean wellFormedFile;
 		// get the name of the property
-		PROPERTY_NAME_MATCHER.find();
+		wellFormedFile = PROPERTY_NAME_MATCHER.find();
 		String propertyName = PROPERTY_NAME_MATCHER.group(PROPERTY_NAME_GROUP);
+		
+		if (!wellFormedFile || propertyName == null) {
+			throw new MalFormedFileException();
+		}
 		return propertyName;
 	}
 
@@ -202,17 +228,21 @@ public class FileParser {
 	 * parse property values
 	 * @param properties 
 	 * @return an array list of the property values
+	 * @throws MalFormedFileException 
 	 */
-	public ArrayList<String> parsePropertyValues(String stringProperty){
+	public ArrayList<String> parsePropertyValues(String stringProperty) throws MalFormedFileException{
 		PROPERTY_VALUES_MATCHER = PROPERTY_VALUES_PATTERN.matcher(stringProperty);
-
+		boolean wellFormedFile;
 		// get the values of the property (example : a,b,c)
-		PROPERTY_VALUES_MATCHER.find();
+		wellFormedFile = PROPERTY_VALUES_MATCHER.find();
 		String propertyValues = PROPERTY_VALUES_MATCHER.group(PROPERTY_VALUES_GROUP);
-
+		
 		// split with ',' and add the different values in the array list
 		ArrayList<String> values = new ArrayList<String>(Arrays.asList(propertyValues.split(",")));
 
+		if (!wellFormedFile || propertyValues == null) {
+			throw new MalFormedFileException();
+		}
 		return values;
 	}
 
@@ -223,9 +253,15 @@ public class FileParser {
 	 * @param firstLinkDirection the first link Direction (IN, OUT or NONO)
 	 * @param secondLinkDirection the second link Direction (IN, OUT or NONO)
 	 * @return IN, OUT, or NONE
+	 * @throws MalFormedFileException 
 	 */
-	public Direction getDirection(String stringFirstLinkDirection, String stringSecondLinkDirection) {
+	public Direction getDirection(String stringFirstLinkDirection, String stringSecondLinkDirection) throws MalFormedFileException {
 		Direction direction;
+		// if file is not well formed 
+		if(stringFirstLinkDirection.equals("<--") && stringSecondLinkDirection.equals("-->")){
+			throw new MalFormedFileException();
+		}
+		
 		// if it is an input link
 		if (stringFirstLinkDirection.equals("<--")) {
 			direction = Direction.IN;
@@ -238,7 +274,7 @@ public class FileParser {
 		}
 		return direction;
 	}
-	
+
 	/**
 	 * get the reverse direction of the parameter
 	 * @param direction the direction to reverse
