@@ -3,98 +3,93 @@ package graph;
 import java.util.ArrayList;
 
 /**
- * Node Class
- * A node is composed of a label and a list of its neighbor
+ * Node Class A node is composed of a label and a list of its neighbor
  * 
  * @author Hadrien
  * @version 0.1
  */
-public class Node {
-
+public class Node{
+	
 	/**
-	 * Node identifier
-	 * e.g.: "Barbara","Carol","BigCo"
+	 * Node identifier e.g.: "Barbara","Carol","BigCo"
 	 */
 	protected String label;
 	
 	/**
-	 * All links starting from the current nodes
-	 * Direction, link values and destination node are stored here 
+	 * All links starting from the current nodes Direction, link values and destination node are stored here
 	 */
 	protected ArrayList<Link> links;
-
+	
 	/**
-	 * Creates a node.
-	 * The identifier (label) is normalized: no spaces, no upperCase
+	 * Creates a node. The identifier (label) is normalized: no spaces, no upperCase
 	 * 
 	 * @param label
 	 * @param links
 	 */
-	public Node(String label, ArrayList<Link> links) {
+	public Node(String label,ArrayList<Link> links){
 		this.label = normalize(label);
 		this.links = links;
 	}
 	
 	/**
-	 * Creates a node with no links
-	 * The identifier (label) is normalized: no spaces, no upperCase
+	 * Creates a node with no links The identifier (label) is normalized: no spaces, no upperCase
 	 * 
 	 * @param label
 	 */
-	public Node(String label) {
+	public Node(String label){
 		this.label = normalize(label);
-		this.links = new ArrayList<Link>();
+		links = new ArrayList<Link>();
 	}
-
+	
 	/**
 	 * Returns label of a node
 	 * 
 	 * @return label
 	 */
-	public String getLabel() {
+	public String getLabel(){
 		return label;
 	}
-
+	
 	/**
 	 * Update the node label
 	 * 
 	 * @param label
 	 */
-	public void setLabel(String label) {
+	public void setLabel(String label){
 		this.label = normalize(label);
 	}
-
+	
 	/**
 	 * Returns all node links
 	 * 
 	 * @return links
 	 */
-	public ArrayList<Link> getLinks() {
-		return this.links;
+	public ArrayList<Link> getLinks(){
+		return links;
 	}
-
+	
 	/**
 	 * Update all the node links
 	 * 
 	 * @param links
 	 */
-	public void setLinks(ArrayList<Link> links) {
+	public void setLinks(ArrayList<Link> links){
 		this.links = links;
 	}
 	
 	/**
-	 * Prints the node label on the basic output 
+	 * Prints the node label on the basic output
 	 */
 	@Override
-	public String toString() {
+	public String toString(){
 		return "Node [" + label + "]";
 	}
-
+	
 	/**
-	 * This method is used to normalize nodes label.
-	 * All spaces are deleted. The label is in lower case.
+	 * This method is used to normalize nodes label. All spaces are deleted. The label is in lower case.
 	 * 
-	 * @param string label
+	 * @param string
+	 *            label
 	 * @return normalized string label
 	 */
 	public String normalize(String s){
@@ -110,6 +105,7 @@ public class Node {
 	 * 
 	 * @param node
 	 */
+	@Override
 	public boolean equals(Object node){
 		boolean is_equal = true;
 		
@@ -117,5 +113,5 @@ public class Node {
 		is_equal = is_equal && this.getLinks().equals(((Node) node).getLinks());
 		return is_equal;
 	}
-	
+
 }
