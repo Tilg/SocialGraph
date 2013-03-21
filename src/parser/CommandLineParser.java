@@ -130,6 +130,7 @@ public class CommandLineParser{
 		}
 	}
 	
+	// TODO: translate all arguments in english
 	public static void main(String[] args){
 		args = new String[7];
 		args[0] = "-f";
