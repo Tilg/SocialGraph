@@ -10,19 +10,19 @@ import java.util.ArrayList;
  * @version 0.1
  */
 public class Property {
-	
+
 	/**
 	 * Property label
 	 * e.g.: "Role","Since","Hired"  
 	 */
 	protected String label;
-	
+
 	/**
 	 * Values of a property
 	 * e.g:"[books, movies, tweets]","2005","May 2005"
 	 */
 	protected ArrayList<String> values;
-	
+
 	/**
 	 * Property constructor
 	 * A property is always composed of a link with a set of attribute
@@ -34,7 +34,7 @@ public class Property {
 		this.label = label;
 		this.values = values;
 	}
-	
+
 	/**
 	 * Return the label of a property
 	 * 
@@ -43,7 +43,7 @@ public class Property {
 	public String getLabel() {
 		return label;
 	}
-	
+
 	/**
 	 * Update the label of a property
 	 * 
@@ -52,7 +52,7 @@ public class Property {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	
+
 	/**
 	 * Return all the values of a property 
 	 * 
@@ -61,7 +61,7 @@ public class Property {
 	public ArrayList<String> getValues() {
 		return values;
 	}
-	
+
 	/**
 	 * Update all the property values
 	 * 
@@ -79,7 +79,7 @@ public class Property {
 	public String toString() {
 		String sout = this.label + "="; 
 		int size = this.values.size();
-		
+
 		if(size == 1){
 			sout += this.values.get(0);
 		} else {
@@ -92,9 +92,19 @@ public class Property {
 		return sout;
 	}
 
+	/**
+	 * This method can be used to compare 2 properties
+	 * Returns True is the if the property given in parameter is equal to the instantiated property
+	 * 
+	 * @param property
+	 */
 	public boolean equals(Object property){
-		return this.getLabel().equals(((Property) property).getLabel()) && this.getValues().equals(((Property) property).getValues());
+		boolean is_equal = true;
+		
+		is_equal =  is_equal && this.getLabel().equals(((Property) property).getLabel());
+		is_equal =  is_equal && this.getValues().equals(((Property) property).getValues());
+		
+		return is_equal;
 	}
-	
-}
 
+}

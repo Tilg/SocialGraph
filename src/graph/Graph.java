@@ -77,6 +77,12 @@ public class Graph {
 		this.addNode(n);
 	}
 
+	/**
+	 * This method finds and returns a graph node
+	 * The node label is given in String format
+	 * 
+	 * @param nodeLabel
+	 */
 	public Node getNode(String nodeLabel){
 		Node n = nodes.get(nodeLabel);
 		if(n == null){
@@ -86,8 +92,23 @@ public class Graph {
 		return n;
 	}
 	
+	/**
+	 * This method can be used to compare 2 graphs.
+	 * Returns TRUE is the if the graph given in parameter is equal to the instantiated graph. 
+	 * 
+	 * @param link
+	 */
 	public boolean equals(Object graph){
-		return this.getNodes().equals(((Graph) graph).getNodes());
+		for(String key : this.getNodes().keySet()) {
+	        if(((Graph) graph).getNodes().containsKey(key)) {
+	            if(!this.getNodes().get(key).equals(((Graph) graph).getNodes().get(key))) {
+	                return false;
+	            }
+	        } else {
+	            return false;
+	        }
+	    }
+	    return this.getNodes().size() == ((Graph) graph).getNodes().size();
 	}
 
 }
