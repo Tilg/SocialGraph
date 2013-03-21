@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -85,4 +86,40 @@ public class Graph{
 		return getNodes().equals(((Graph)graph).getNodes());
 	}
 	
+	/**
+	 * This method execute the given request and return a node list
+	 * 
+	 * @param request
+	 * @return TODO : Implement the executeRequest() method
+	 */
+	public ArrayList<Node> executeRequest(String request){
+		return null;
+	}
+	
+	/**
+	 * TODO : Implement the method setSearchStrategy()
+	 * 
+	 * @param search
+	 */
+	public void setSearchStrategy(Search search){
+		
+	}
+	
+	/**
+	 * TODO : Implement the method setSearchLevel()
+	 * 
+	 * @param level
+	 */
+	public void setSearchLevel(int level){
+		
+	}
+	
+	/**
+	 * TODO : Implement the method setUniquenessSearch()
+	 * 
+	 * @param uniqueness
+	 */
+	public void setUniquenessSearch(boolean uniqueness){
+		
+	}
 }
