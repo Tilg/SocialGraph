@@ -44,7 +44,7 @@ public class FileParserTest {
 	*/
 
 	@Test
-	public void testParseSmallLine(){
+	public void testParseSmallLine() throws MalFormedFileException{
 		String line = "Barbara--friend-->Elizabeth";
 
 		Graph graphExpected = new Graph(new HashMap<String, Node>());
