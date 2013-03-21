@@ -168,7 +168,7 @@ public class FileParser {
 		// Two lines are equals if the nodes have the same label, links have the same label and the same direction
 		if (firstNotAlreadyExists && secondNodeAlreadyExists) {
 			for (Link link : firstNode.getLinks()) {
-				if (link.getDestination().getLabel().equals(secondNode.getLabel()) && link.getDestination() == firstLink.getDestination()) {
+				if (link.getDestination().getLabel().equals(secondNode.getLabel()) && link.getDirection() == firstLink.getDirection()) {
 					throw new MalFormedFileException();
 				}
 			}

@@ -35,13 +35,17 @@ public class FileParserTest {
 	public void tearDown() throws Exception {
 	}
 
-	
-	/*
-	@Test
-	public void testParseFile() {
-	
+
+	@Test(expected=MalFormedFileException.class)
+	public void testParseTwoSameLines() throws MalFormedFileException {
+		String line = "Barbara--friend-->Elizabeth";
+		String sameLine = "Barbara--friend[since=1999]-->Elizabeth";
+
+		Graph graph = new Graph(new HashMap<String, Node>()); 
+
+		fileParser.parseLine(line, graph);
+		fileParser.parseLine(sameLine, graph);
 	}
-	*/
 
 	@Test
 	public void testParseSmallLine() throws MalFormedFileException{
@@ -59,7 +63,7 @@ public class FileParserTest {
 		Graph graphComputed = new Graph(new HashMap<String, Node>()); 
 		fileParser.parseLine(line, graphComputed);
 
-		assertEquals(graphExpected.getNodes(), graphComputed.getNodes());
+		assertEquals(graphExpected, graphComputed);
 	}
 
 	/*@Test
