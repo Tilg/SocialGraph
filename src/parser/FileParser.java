@@ -71,7 +71,7 @@ public class FileParser {
 
 			bufferedReader.close();
 		} catch (IOException e){
-			e.printStackTrace();
+			graph = null;
 		}
 		return graph;
 	}
@@ -163,9 +163,7 @@ public class FileParser {
 			firstNode.getLinks().add(firstLink);
 			secondNode.getLinks().add(secondLink);
 		} catch (MalFormedFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(0);
+			graph = null;
 		}
 	}
 
