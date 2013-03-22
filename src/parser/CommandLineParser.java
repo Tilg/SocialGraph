@@ -145,6 +145,7 @@ public class CommandLineParser{
 		args[5] = "3";
 		args[6] = "-u";
 		*/
+		System.out.println("Welcome to the Graph Search monitor.");
 		CommandLineParser parser = new CommandLineParser();
 		if (!parser.parseArguments(args)){
 			parser.listenRequest();
