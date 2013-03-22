@@ -27,8 +27,8 @@ public class CommandLineParser{
 		/*
 		 Arguments
 		 -f [.*]		=> filename
-		-p [l | p]	=> search strategy : DEPTH_FIRST (profondeur) or BREADTH_FIRST (largeur)
-		-n [0-9]* 	=> max level of search
+		-s [d | b]	=> search strategy : DEPTH_FIRST (profondeur) or BREADTH_FIRST (largeur)
+		-l [0-9]* 	=> max level of search
 		-u				=> if this parameter is present, uniqueness = false
 		 */
 		String fileName = "";
@@ -49,31 +49,31 @@ public class CommandLineParser{
 			if (argument.equals("-f")){
 				fileName = nextArgument;
 				i++;
-			}else if (argument.equals("-p")){
-				if (nextArgument.equals("l")){
+			}else if (argument.equals("-s")){
+				if (nextArgument.equals("b")){
 					searchStrategy = Search.BREADTH_FIRST;
-				}else if (nextArgument.equals("p")){
+				}else if (nextArgument.equals("d")){
 					searchStrategy = Search.DEPTH_FIRST;
 				}else{
 					// error argument not allowed
-					System.out.println("error argument not allowed " + nextArgument + " for " + argument);
+					System.out.println("error argument not allowed '" + nextArgument + "' for '" + argument + "'");
 					parsingArgumentError = true;
 				}
 				i++;
-			}else if (argument.equals("-n")){
+			}else if (argument.equals("-l")){
 				if (isPositiveInteger(nextArgument)){
 					searchLevel = Integer.parseInt(nextArgument);
 					i++;
 				}else{
 					// error : argument value (for search level) not a positive integer
-					System.out.println("error argument not allowed " + nextArgument + " for " + argument);
+					System.out.println("error argument not allowed '" + nextArgument + "' for '" + argument + "'");
 					parsingArgumentError = true;
 				}
 			}else if (argument.equals("-u")){
 				uniqueness = false;
 			}else{
 				// error argument not allowed
-				System.out.println("error argument not allowed " + nextArgument);
+				System.out.println("error argument not allowed '" + nextArgument + "'");
 				parsingArgumentError = true;
 			}
 		}
@@ -84,7 +84,7 @@ public class CommandLineParser{
 				uniqueness = false;
 			}else{
 				// error argument not allowed
-				System.out.println("error argument not allowed " + lastArgument);
+				System.out.println("error argument not allowed '" + lastArgument + "'");
 				parsingArgumentError = true;
 			}
 		}
@@ -130,16 +130,21 @@ public class CommandLineParser{
 		}
 	}
 	
+	public Graph getGraph(){
+		return graph;
+	}
+	
 	public static void main(String[] args){
+		/*
 		args = new String[7];
 		args[0] = "-f";
 		args[1] = "graph.txt";
-		args[2] = "-p";
-		args[3] = "l";// "p"
-		args[4] = "-n";
+		args[2] = "-s";
+		args[3] = "b";// "d"
+		args[4] = "-l";
 		args[5] = "3";
 		args[6] = "-u";
-		
+		*/
 		CommandLineParser parser = new CommandLineParser();
 		if (!parser.parseArguments(args)){
 			parser.listenRequest();
