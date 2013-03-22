@@ -15,6 +15,18 @@ public class Graph{
 	 * Nodes HashMap Very efficient for node search, insert or delete
 	 */
 	protected HashMap<String,Node> nodes;
+	/**
+	 * Search Strategy for node search, insert or delete
+	 */
+	protected Search searchStrategy;
+	/**
+	 * Max search level for node search, insert or delete
+	 */
+	protected int searchLevel;
+	/**
+	 * uniquenessSearch is at true, if we can pass only one time on the same node.
+	 */
+	protected boolean uniquenessSearch;
 	
 	
 	/**
@@ -22,6 +34,9 @@ public class Graph{
 	 */
 	public Graph(){
 		nodes = new HashMap<String,Node>();
+		searchStrategy = Search.DEPTH_FIRST;
+		searchLevel = -1;
+		uniquenessSearch = true;
 	}
 	
 	/**
@@ -102,7 +117,7 @@ public class Graph{
 	 * @param search
 	 */
 	public void setSearchStrategy(Search search){
-		
+		searchStrategy = search;
 	}
 	
 	/**
@@ -111,7 +126,7 @@ public class Graph{
 	 * @param level
 	 */
 	public void setSearchLevel(int level){
-		
+		searchLevel = level;
 	}
 	
 	/**
@@ -120,6 +135,20 @@ public class Graph{
 	 * @param uniqueness
 	 */
 	public void setUniquenessSearch(boolean uniqueness){
-		
+		uniquenessSearch = uniqueness;
 	}
+	
+	public Search getSearchStrategy(){
+		return searchStrategy;
+	}
+	
+	public int getSearchLevel(){
+		return searchLevel;
+	}
+	
+	public boolean isUniquenessSearch(){
+		return uniquenessSearch;
+	}
+	
+	
 }
