@@ -1,10 +1,8 @@
 package parser;
 
 import graph.Graph;
-import graph.Node;
 import graph.Search;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -123,7 +121,7 @@ public class CommandLineParser{
 			if (request.equals(REQUEST_QUIT)){
 				continu = false;
 			}else{
-				ArrayList<Node> results = graph.executeRequest(request);
+				Graph results = graph.executeRequest(request);
 				System.out.println("Results : ");
 				System.out.println(results);
 			}

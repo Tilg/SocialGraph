@@ -1,7 +1,8 @@
 package graph;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class is representing the graph. It is the main class Only nodes are stored because of the search
@@ -71,10 +72,9 @@ public class Graph{
 		Node n = new Node(nodeLabel);
 		addNode(n);
 	}
-
+	
 	/**
-	 * This method finds and returns a graph node
-	 * The node label is given in String format
+	 * This method finds and returns a graph node The node label is given in String format
 	 * 
 	 * @param nodeLabel
 	 */
@@ -88,23 +88,34 @@ public class Graph{
 	}
 	
 	/**
-	 * This method can be used to compare 2 graphs.
-	 * Returns TRUE is the if the graph given in parameter is equal to the instantiated graph. 
+	 * This method can be used to compare 2 graphs. Returns TRUE is the if the graph given in parameter is equal to the instantiated graph.
 	 * 
 	 * @param link
 	 */
 	@Override
 	public boolean equals(Object graph){
-		for(String key : this.getNodes().keySet()) {
-	        if(((Graph) graph).getNodes().containsKey(key)) {
-	            if(!this.getNodes().get(key).equals(((Graph) graph).getNodes().get(key))) {
-	                return false;
-	            }
-	        } else {
-	            return false;
-	        }
-	    }
-	    return this.getNodes().size() == ((Graph) graph).getNodes().size();
+		Set<String> set = getNodes().keySet();
+		Iterator<String> iterator = set.iterator();
+		
+		boolean is_equal = true;
+		
+		if (getNodes().size() != ((Graph)graph).getNodes().size()){
+			is_equal = false;
+		}
+		
+		while (iterator.hasNext() && is_equal){
+			String key = iterator.next();
+			
+			if (((Graph)graph).getNodes().containsKey(key)){
+				if (!getNodes().get(key).equals(((Graph)graph).getNodes().get(key))){
+					is_equal = false;
+				}
+			}else{
+				is_equal = false;
+			}
+		}
+		
+		return is_equal;
 	}
 	
 	/**
@@ -113,7 +124,7 @@ public class Graph{
 	 * @param request
 	 * @return TODO : Implement the executeRequest() method
 	 */
-	public ArrayList<Node> executeRequest(String request){
+	public Graph executeRequest(String request){
 		return null;
 	}
 	
@@ -143,5 +154,5 @@ public class Graph{
 	public void setUniquenessSearch(boolean uniqueness){
 		
 	}
-
+	
 }

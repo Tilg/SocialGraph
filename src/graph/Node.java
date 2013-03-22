@@ -100,8 +100,7 @@ public class Node{
 	}
 	
 	/**
-	 * This method can be used to compare 2 nodes
-	 * Returns True is the if the node given in parameter is equal to the instantiated node
+	 * This method can be used to compare 2 nodes Returns True is the if the node given in parameter is equal to the instantiated node
 	 * 
 	 * @param node
 	 */
@@ -109,9 +108,10 @@ public class Node{
 	public boolean equals(Object node){
 		boolean is_equal = true;
 		
-		is_equal = is_equal && this.getLabel().equals(((Node) node).getLabel());
-		is_equal = is_equal && this.getLinks().equals(((Node) node).getLinks());
+		is_equal = is_equal && getLabel().equals(((Node)node).getLabel());
+		is_equal = is_equal && getLinks().equals(((Node)node).getLinks());
+		
 		return is_equal;
 	}
-
+	
 }
