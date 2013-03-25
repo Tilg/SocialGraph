@@ -132,11 +132,13 @@ public class FileParser {
 		//set the two links directions 
 		firstLinkDirection = getDirection(stringFirstLinkDirection, stringSecondLinkDirection);
 		secondLinkDirection = getReverseDirection(firstLinkDirection);
-
+		boolean firstNotAlreadyExists = false;
+		boolean secondNodeAlreadyExists = false;
+		
 		// first node construction
 		// if the node already exists
 		if (graph.getNodes().containsKey(firstNodeLabel)){
-			//firstNode = graph.getNodes().get(firstNodeLabel);
+			firstNotAlreadyExists = true;
 			firstNode = graph.getNode(firstNodeLabel);
 		} else {
 			// if the node does not already exist	
@@ -149,8 +151,8 @@ public class FileParser {
 		// second node construction
 		// if the node already exists
 		if (graph.getNodes().containsKey(secondNodeLabel)){
-			//secondNode = graph.getNodes().get(secondNodeLabel);
 			secondNode = graph.getNode(secondNodeLabel);
+			secondNodeAlreadyExists = true;
 		} else {
 			// if the node does not already exist	
 			//secondNode = new Node(secondNodeLabel); // Waiting for Hadrien modification of the Graph Class Methods
@@ -161,6 +163,16 @@ public class FileParser {
 
 		firstLink = new Link(linkLabel, secondNode, properties, firstLinkDirection);
 		secondLink = new Link(linkLabel, firstNode, properties, secondLinkDirection);
+		
+		// Test if we are going to add two same lines 
+		// Two lines are equals if the nodes have the same label, links have the same label and the same direction
+		if (firstNotAlreadyExists && secondNodeAlreadyExists) {
+			for (Link link : firstNode.getLinks()) {
+				if (link.getDestination().getLabel().equals(secondNode.getLabel()) && link.getDirection() == firstLink.getDirection()) {
+					throw new MalFormedFileException();
+				}
+			}
+		}
 
 		firstNode.getLinks().add(firstLink);
 		secondNode.getLinks().add(secondLink);
