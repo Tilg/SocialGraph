@@ -14,12 +14,12 @@ public class Property{
 	 * Property label e.g.: "Role","Since","Hired"
 	 */
 	protected String label;
-	
+
 	/**
 	 * Values of a property e.g:"[books, movies, tweets]","2005","May 2005"
 	 */
 	protected ArrayList<String> values;
-	
+
 	/**
 	 * Property constructor A property is always composed of a link with a set of attribute
 	 * 
@@ -30,7 +30,7 @@ public class Property{
 		this.label = label;
 		this.values = values;
 	}
-	
+
 	/**
 	 * Return the label of a property
 	 * 
@@ -39,7 +39,7 @@ public class Property{
 	public String getLabel(){
 		return label;
 	}
-	
+
 	/**
 	 * Update the label of a property
 	 * 
@@ -48,7 +48,7 @@ public class Property{
 	public void setLabel(String label){
 		this.label = label;
 	}
-	
+
 	/**
 	 * Return all the values of a property
 	 * 
@@ -57,7 +57,7 @@ public class Property{
 	public ArrayList<String> getValues(){
 		return values;
 	}
-	
+
 	/**
 	 * Update all the property values
 	 * 
@@ -66,29 +66,41 @@ public class Property{
 	public void setValues(ArrayList<String> values){
 		this.values = values;
 	}
-	
+
 	/**
 	 * Prints the property on the basic output
 	 */
 	@Override
-	public String toString(){
-		String sout = label + "=";
-		int size = values.size();
-		
-		if (size == 1){
-			sout += values.get(0);
-		}else{
-			sout += "[";
-			for (int i = 0 ; i < (size - 1) ; i++){
-				sout += values.get(i) + ",";
+	public String toString() {
+		String sout = this.label + "="; 
+		int size = this.values.size();
+
+		if(size == 1){
+			sout += this.values.get(0);
+		} else {
+			sout += "["; 
+			for(int i = 0; i <(size-1); i++){
+				sout += this.values.get(i) + ",";
 			}
 			sout += values.get(size) + "]";
 		}
 		return sout;
 	}
-	
+
+	/**
+	 * This method can be used to compare 2 properties
+	 * Returns True is the if the property given in parameter is equal to the instantiated property
+	 * 
+	 * @param property
+	 */
 	@Override
 	public boolean equals(Object property){
-		return getLabel().equals(((Property)property).getLabel()) && getValues().equals(((Property)property).getValues());
+		boolean is_equal = true;
+		
+		is_equal =  is_equal && this.getLabel().equals(((Property) property).getLabel());
+		is_equal =  is_equal && this.getValues().equals(((Property) property).getValues());
+		
+		return is_equal;
 	}
+	
 }

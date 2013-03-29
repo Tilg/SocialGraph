@@ -7,5 +7,12 @@ package graph;
  * @version 0.1
  */
 public enum Search{
-	DEPTH_FIRST, BREADTH_FIRST;
+	/**
+	 * PROFONDEUR
+	 */
+	DEPTH_FIRST,
+	/**
+	 * LARGEUR
+	 */
+	BREADTH_FIRST;
 };

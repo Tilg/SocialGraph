@@ -1,7 +1,8 @@
 package graph;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class is representing the graph. It is the main class Only nodes are stored because of the search
@@ -9,19 +10,34 @@ import java.util.HashMap;
  * @author Hadrien
  * @version 0.1
  */
+
 public class Graph{
 	
 	/**
 	 * Nodes HashMap Very efficient for node search, insert or delete
 	 */
 	protected HashMap<String,Node> nodes;
-	
+	/**
+	 * Search Strategy for node search, insert or delete
+	 */
+	protected Search searchStrategy;
+	/**
+	 * Max search level for node search, insert or delete
+	 */
+	protected int searchLevel;
+	/**
+	 * uniquenessSearch is at true, if we can pass only one time on the same node.
+	 */
+	protected boolean uniquenessSearch;
 	
 	/**
 	 * Default constructor By default an empty HashMap is created
 	 */
 	public Graph(){
 		nodes = new HashMap<String,Node>();
+		searchStrategy = Search.DEPTH_FIRST;
+		searchLevel = -1;
+		uniquenessSearch = true;
 	}
 	
 	/**
@@ -72,6 +88,11 @@ public class Graph{
 		addNode(n);
 	}
 	
+	/**
+	 * This method finds and returns a graph node The node label is given in String format
+	 * 
+	 * @param nodeLabel
+	 */
 	public Node getNode(String nodeLabel){
 		Node n = nodes.get(nodeLabel);
 		if (n == null){
@@ -81,9 +102,35 @@ public class Graph{
 		return n;
 	}
 	
+	/**
+	 * This method can be used to compare 2 graphs. Returns TRUE is the if the graph given in parameter is equal to the instantiated graph.
+	 * 
+	 * @param link
+	 */
 	@Override
 	public boolean equals(Object graph){
-		return getNodes().equals(((Graph)graph).getNodes());
+		Set<String> set = getNodes().keySet();
+		Iterator<String> iterator = set.iterator();
+		
+		boolean is_equal = true;
+		
+		if (getNodes().size() != ((Graph)graph).getNodes().size()){
+			is_equal = false;
+		}
+		
+		while (iterator.hasNext() && is_equal){
+			String key = iterator.next();
+			
+			if (((Graph)graph).getNodes().containsKey(key)){
+				if (!getNodes().get(key).equals(((Graph)graph).getNodes().get(key))){
+					is_equal = false;
+				}
+			}else{
+				is_equal = false;
+			}
+		}
+		
+		return is_equal;
 	}
 	
 	/**
@@ -92,7 +139,7 @@ public class Graph{
 	 * @param request
 	 * @return TODO : Implement the executeRequest() method
 	 */
-	public ArrayList<Node> executeRequest(String request){
+	public Graph executeRequest(String request){
 		return null;
 	}
 	
@@ -102,7 +149,7 @@ public class Graph{
 	 * @param search
 	 */
 	public void setSearchStrategy(Search search){
-		
+		searchStrategy = search;
 	}
 	
 	/**
@@ -111,7 +158,7 @@ public class Graph{
 	 * @param level
 	 */
 	public void setSearchLevel(int level){
-		
+		searchLevel = level;
 	}
 	
 	/**
@@ -120,6 +167,20 @@ public class Graph{
 	 * @param uniqueness
 	 */
 	public void setUniquenessSearch(boolean uniqueness){
-		
+		uniquenessSearch = uniqueness;
 	}
+	
+	public Search getSearchStrategy(){
+		return searchStrategy;
+	}
+	
+	public int getSearchLevel(){
+		return searchLevel;
+	}
+	
+	public boolean isUniquenessSearch(){
+		return uniquenessSearch;
+	}
+	
 }
+

@@ -145,9 +145,22 @@ public class Link{
 		this.direction = direction;
 	}
 	
+	/**
+	 * This method can be used to compare 2 links.
+	 * Returns TRUE is the if the link given in parameter is equal to the instantiated link. 
+	 * 
+	 * @param link
+	 */
 	@Override
 	public boolean equals(Object link){
-		return getLabel().equals(((Link)link).getLabel()) // && this.getDestination() == ((Link) link).getDestination()
-				&& getProperties().equals(((Link)link).getProperties()) && getDirection() == ((Link)link).getDirection();
+		boolean is_equal = true;
+		
+		is_equal = is_equal && this.getLabel().equals(((Link) link).getLabel());
+		is_equal = is_equal && this.getDestination().equals(((Link) link).getDestination());
+		is_equal = is_equal && this.getProperties().equals(((Link) link).getProperties());
+		is_equal = is_equal && this.getDirection() == ((Link) link).getDirection();
+		
+		return is_equal;
 	}
+	
 }
