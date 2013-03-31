@@ -5,6 +5,9 @@ import graph.Search;
 
 import java.util.Scanner;
 
+import operation.GraphOperation;
+import operation.GraphSearch;
+
 /**
  * This class is useful for parsing the command line. This is the main class.
  * 
@@ -12,24 +15,55 @@ import java.util.Scanner;
  * @version 0.1
  */
 public class CommandLineParser{
-	private final static Scanner SCANNER = new Scanner(System.in);
-	private final static String QUIT_REQUEST = "quit";
-	public final static String HELP_REQUEST = "help";
-	private Graph graph;
-	
+	/*
+	 * Here is a list of differents arguments which can be entered by the user in the command line
+	 */
+	/**
+	 * The argument "-f" permit to specify a filename
+	 */
 	public final static String ARGUMENT_FILE_NAME = "-f";
+	/**
+	 * The argument "-s" permit to specify a the search strategy : it can be "d" for a depth first search or "b" for a breadth first search
+	 */
 	public final static String ARGUMENT_SEARCH_STRATEGY = "-s";
 	public final static String ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST = "d";
 	public final static String ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST = "b";
+	/**
+	 * The argument "-l" permit to specify a search level
+	 */
 	public final static String ARGUMENT_SEARCH_LEVEL = "-l";
+	/**
+	 * The argument "-u" is to specify if the search isn't uniqueness
+	 */
 	public final static String ARGUMENT_UNIQUENESS = "-u";
-	
+	/**
+	 * This is the string which permit to stop the application when it is entered (as a request)
+	 */
+	private final static String QUIT_REQUEST = "quit";
+	/**
+	 * This is the string which permit to see the help message when it is entered (as a request)
+	 */
+	public final static String HELP_REQUEST = "help";
+	/**
+	 * Graph on which operations will be executed.
+	 */
+	private Graph graph;
+	/**
+	 * Graph operation that will be execute
+	 */
+	private GraphOperation operation;
 	
 	public CommandLineParser(){
 		super();
 		displayWelcomeMessage();
 	}
 	
+	/**
+	 * This method analyze the arguments in parameter, and builds a graph (from theses parameters)
+	 * 
+	 * @param args
+	 * @return
+	 */
 	public boolean parseArguments(String[] args){
 		boolean parsingArgumentError = false;
 		/*
@@ -106,15 +140,20 @@ public class CommandLineParser{
 			graph = parser.parseFile(fileName);
 			
 			if (graph != null){
-				graph.setSearchStrategy(searchStrategy);
-				graph.setSearchLevel(searchLevel);
-				graph.setUniquenessSearch(uniqueness);
+				operation = new GraphSearch(graph,searchStrategy,searchLevel,uniqueness);
 			}
 		}
 		
 		return parsingArgumentError;
 	}
 	
+	/**
+	 * This method test the string in parameter and return true if this string is a positive integer, otherwise return false
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @return boolean
+	 */
 	public boolean isPositiveInteger(String str){
 		boolean isPositiveInteger = false;
 		try{
@@ -127,27 +166,31 @@ public class CommandLineParser{
 		return isPositiveInteger;
 	}
 	
+	/**
+	 * This method is waiting a request from the user, execute it and display the result until the user enters "quit"
+	 */
 	public void listenRequest(){
+		Scanner scanner = new Scanner(System.in);
 		boolean continu = true;
 		while (continu){
 			System.out.println("\nEnter your request :");
-			String request = SCANNER.next();
+			String request = scanner.next();
 			if (request.equals(QUIT_REQUEST)){
 				continu = false;
 			}else if (request.equals(HELP_REQUEST)){
 				displayHelpMessage();
 			}else{
-				Graph results = graph.executeRequest(request);
+				((GraphSearch)operation).setRequest(request);
+				Graph results = ((GraphSearch)operation).execute();
 				System.out.println("Results : ");
 				System.out.println(results);
 			}
 		}
 	}
 	
-	public Graph getGraph(){
-		return graph;
-	}
-	
+	/**
+	 * This method display a welcome message
+	 */
 	public void displayWelcomeMessage(){
 		System.out.println("Welcome to the Graph Search monitor.");
 		System.out.println("Your Graph Search connection id is " + (int)(Math.random() * 9 + 1));
@@ -161,6 +204,9 @@ public class CommandLineParser{
 		System.out.println("Type '" + HELP_REQUEST + "' for help.");
 	}
 	
+	/**
+	 * This method display an help message
+	 */
 	public void displayHelpMessage(){
 		System.out.println("\nCommand line arguments : ");
 		System.out.println(ARGUMENT_FILE_NAME + "\t<filename>\tFile path to the graph");
@@ -173,6 +219,11 @@ public class CommandLineParser{
 		System.out.println(QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
 	}
 	
+	/**
+	 * This is the main method of this application
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args){
 		CommandLineParser parser = new CommandLineParser();
 		if (!parser.parseArguments(args)){

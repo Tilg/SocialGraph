@@ -12,32 +12,17 @@ import java.util.Set;
  */
 
 public class Graph{
-	
 	/**
 	 * Nodes HashMap Very efficient for node search, insert or delete
 	 */
 	protected HashMap<String,Node> nodes;
-	/**
-	 * Search Strategy for node search, insert or delete
-	 */
-	protected Search searchStrategy;
-	/**
-	 * Max search level for node search, insert or delete
-	 */
-	protected int searchLevel;
-	/**
-	 * uniquenessSearch is at true, if we can pass only one time on the same node.
-	 */
-	protected boolean uniquenessSearch;
+	
 	
 	/**
 	 * Default constructor By default an empty HashMap is created
 	 */
 	public Graph(){
 		nodes = new HashMap<String,Node>();
-		searchStrategy = Search.DEPTH_FIRST;
-		searchLevel = -1;
-		uniquenessSearch = true;
 	}
 	
 	/**
@@ -133,54 +118,4 @@ public class Graph{
 		return is_equal;
 	}
 	
-	/**
-	 * This method execute the given request and return a node list
-	 * 
-	 * @param request
-	 * @return TODO : Implement the executeRequest() method
-	 */
-	public Graph executeRequest(String request){
-		return null;
-	}
-	
-	/**
-	 * TODO : Implement the method setSearchStrategy()
-	 * 
-	 * @param search
-	 */
-	public void setSearchStrategy(Search search){
-		searchStrategy = search;
-	}
-	
-	/**
-	 * TODO : Implement the method setSearchLevel()
-	 * 
-	 * @param level
-	 */
-	public void setSearchLevel(int level){
-		searchLevel = level;
-	}
-	
-	/**
-	 * TODO : Implement the method setUniquenessSearch()
-	 * 
-	 * @param uniqueness
-	 */
-	public void setUniquenessSearch(boolean uniqueness){
-		uniquenessSearch = uniqueness;
-	}
-	
-	public Search getSearchStrategy(){
-		return searchStrategy;
-	}
-	
-	public int getSearchLevel(){
-		return searchLevel;
-	}
-	
-	public boolean isUniquenessSearch(){
-		return uniquenessSearch;
-	}
-	
 }
-
