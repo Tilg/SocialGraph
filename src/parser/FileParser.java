@@ -20,7 +20,6 @@ import graph.Property;;
 
 
 /**
- * TODO : throw MalFormedFileException
  * This class is useful for parsing a text file 
  * and return a graph
  * @author mathieu_canzerini
@@ -86,12 +85,8 @@ public class FileParser {
 	 */
 	public void parseLine(String line, Graph graph) throws MalFormedFileException{
 		LINE_MATCHER = LINE_PATTERN.matcher(line);
-		boolean wellFormedFile = true;
 
-		// matches the line with the pattern
-		wellFormedFile = LINE_MATCHER.find();
-
-		if (!wellFormedFile) {
+		if (!LINE_MATCHER.find()) {
 			throw new MalFormedFileException();
 		}
 
