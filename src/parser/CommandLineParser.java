@@ -186,6 +186,7 @@ public class CommandLineParser{
 				System.out.println(results);
 			}
 		}
+		scanner.close();
 	}
 	
 	/**
