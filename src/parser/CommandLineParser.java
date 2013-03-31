@@ -1,6 +1,8 @@
 package parser;
 
+import exception.MalFormedRequestException;
 import graph.Graph;
+import graph.Request;
 import graph.Search;
 
 import java.util.Scanner;
@@ -44,6 +46,10 @@ public class CommandLineParser{
 	 * This is the string which permit to see the help message when it is entered (as a request)
 	 */
 	public final static String HELP_REQUEST = "help";
+	/**
+	 * This is the string which permit to see the request help message when it is entered (as a request)
+	 */
+	public final static String REQUEST_HELP_REQUEST = "request help";
 	/**
 	 * Graph on which operations will be executed.
 	 */
@@ -179,9 +185,17 @@ public class CommandLineParser{
 				continu = false;
 			}else if (request.equals(HELP_REQUEST)){
 				displayHelpMessage();
+			}else if (request.equals(REQUEST_HELP_REQUEST)){
+				displayRequestHelpMessage();
 			}else{
-				((GraphSearch)operation).setRequest(request);
-				Graph results = ((GraphSearch)operation).execute();
+				((GraphSearch)operation).setRequest(new Request(request));
+				Graph results = new Graph();
+				try {
+					results = ((GraphSearch)operation).execute();
+				} catch (MalFormedRequestException e) {
+					System.out.println("your request is not well formed, type '" + REQUEST_HELP_REQUEST + "' for help.");
+					e.printStackTrace();
+				}
 				System.out.println("Results : ");
 				System.out.println(results);
 			}
@@ -191,6 +205,7 @@ public class CommandLineParser{
 	
 	/**
 	 * This method display a welcome message
+	 * TODO bufferiser la chaine et l'afficher avec un seul println car c'est super long d'écrire a l'écran et le prog perd le process sur une demande d'ecriture ( remarque florent )
 	 */
 	public void displayWelcomeMessage(){
 		System.out.println("Welcome to the Graph Search monitor.");
@@ -207,6 +222,7 @@ public class CommandLineParser{
 	
 	/**
 	 * This method display an help message
+	 * TODO bufferiser la chaine et l'afficher avec un seul println car c'est super long d'écrire a l'écran et le prog perd le process sur une demande d'ecriture ( remarque florent )
 	 */
 	public void displayHelpMessage(){
 		System.out.println("\nCommand line arguments : ");
@@ -218,6 +234,13 @@ public class CommandLineParser{
 		System.out.println(ARGUMENT_UNIQUENESS
 				+ "\t\t\t\tUniqueness (if this parameter is present, a node can be passed several time during a search.)");
 		System.out.println(QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
+	}
+	
+	/**
+	 * This method display a request help message
+	 */
+	public void displayRequestHelpMessage(){
+		System.out.println("\nTo make a well formed request, you need to have : \n\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n\t- nodeLabel\n\nYou can also see the entire graph with the request '*'");
 	}
 	
 	/**

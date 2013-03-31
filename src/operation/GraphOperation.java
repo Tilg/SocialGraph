@@ -1,5 +1,6 @@
 package operation;
 
+import exception.MalFormedRequestException;
 import graph.Graph;
 
 /**
@@ -17,8 +18,9 @@ public abstract class GraphOperation{
 	 * this abstract method execute the operation on the graph (in attribut) and return a graph as the result
 	 * 
 	 * @return Graph
+	 * @throws MalFormedRequestException 
 	 */
-	public abstract Graph execute();
+	public abstract Graph execute() throws MalFormedRequestException;
 	
 	public Graph getGraph(){
 		return graph;
