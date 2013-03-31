@@ -1,8 +1,6 @@
 package test.parser;
 
 import static org.junit.Assert.assertEquals;
-import graph.Graph;
-import graph.Search;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,12 +42,6 @@ public class CommandLineParserTest{
 		boolean parsingState = commandLineParser.parseArguments(args);
 		
 		assertEquals(false,parsingState);
-		
-		Graph graph = commandLineParser.getGraph();
-		
-		assertEquals(false,graph.isUniquenessSearch());
-		assertEquals(3,graph.getSearchLevel());
-		assertEquals(Search.BREADTH_FIRST,graph.getSearchStrategy());
 	}
 	
 	
