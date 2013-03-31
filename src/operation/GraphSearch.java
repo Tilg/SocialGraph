@@ -1,6 +1,14 @@
 package operation;
 
+import java.util.HashMap;
+
+import parser.RequestParser;
+
+import exception.MalFormedRequestException;
+
 import graph.Graph;
+import graph.Node;
+import graph.Request;
 import graph.Search;
 
 /**
@@ -22,19 +30,45 @@ public class GraphSearch extends GraphOperation{
 	/**
 	 * The request to execute
 	 */
-	protected String request;
+	protected Request request;
 	
 	public GraphSearch(Graph graph,Search searchStrategy,int searchLevel,boolean uniquenessSearch){
 		super(graph);
 		this.searchStrategy = searchStrategy;
 		this.searchLevel = searchLevel;
 		this.uniquenessSearch = uniquenessSearch;
-		request = "";
+		request = new Request();
 	}
 	
+	/** this method execute a request on the graph who represent the text file in parameter 
+	 * @return Graph, a graph who is a part of the main graph who match with the request
+	 * @throws MalFormedRequestException 
+	 **/
 	@Override
-	public Graph execute(){
-		return null;
+	public Graph execute() throws MalFormedRequestException{
+		Graph resultGraph = null;
+		HashMap<String,Node> resultTable = new HashMap<String,Node>();
+		
+		if (request.getTypedRequest().equals("*")){//if the request is *, the result graph is the entire input graph
+			resultGraph = graph;
+		}
+		else{
+			if (!RequestParser.checkRequest(request)) {
+				throw new MalFormedRequestException();
+			}
+			else{ //if the request is wellformed
+				
+				//TODO ( Ajouter des test pour tester le parseur de requete )
+				
+				//codage de la recuperation des données dans la requete
+				RequestParser.getFiltersFromRequest(request);
+				
+				
+				//codage de l'exploration du graphe 
+			}
+		}
+
+		return resultGraph;
 	}
 	
 	public Search getSearchStrategy(){
@@ -49,7 +83,7 @@ public class GraphSearch extends GraphOperation{
 		return uniquenessSearch;
 	}
 	
-	public String getRequest(){
+	public Request getRequest(){
 		return request;
 	}
 	
@@ -65,7 +99,7 @@ public class GraphSearch extends GraphOperation{
 		this.uniquenessSearch = uniquenessSearch;
 	}
 	
-	public void setRequest(String request){
+	public void setRequest(Request request){
 		this.request = request;
 	}
 	
