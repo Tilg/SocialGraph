@@ -240,7 +240,7 @@ public class CommandLineParser{
 	 * This method display a request help message
 	 */
 	public void displayRequestHelpMessage(){
-		System.out.println("\nTo make a well formed request, you need to have : \n\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n\t- nodeLabel\n\nYou can also see the entire graph with the request '*'");
+		System.out.println("\nTo make a well formed request, you need to have : \n\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n\t- nodeLabel\n\nYou can combine request with '&'\n\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\nYou can also see the entire graph with the request '*'");
 	}
 	
 	/**

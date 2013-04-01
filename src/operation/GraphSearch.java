@@ -63,8 +63,7 @@ public class GraphSearch extends GraphOperation{
 				//codage de la recuperation des données dans la requete
 				RequestParser.getFiltersFromRequest(request);
 				
-				
-				//codage de l'exploration du graphe 
+				//codage de l'exploration du graphe avec les filtres stockés dans la requete
 			}
 		}
 

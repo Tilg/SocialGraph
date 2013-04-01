@@ -8,7 +8,6 @@ import java.util.ArrayList;
  */
 public class Request {
 
-
 	/**
 	 * the text of the request typed by the user
 	 */
@@ -27,7 +26,7 @@ public class Request {
 	/**
 	 * the list who contains all the property of the link filters used in the query
 	 */
-	private ArrayList<Property> propertyList; 
+	private ArrayList<ArrayList<Property>> propertyList; 
 	
 	/**
 	 * the list who contains all the source node targeted by the query
@@ -41,7 +40,7 @@ public class Request {
 	{
 		linkLabelList = new ArrayList<String>(1);
 		directionList = new ArrayList<String>(1);
-		propertyList = new ArrayList<Property>(1);
+		propertyList = new ArrayList<ArrayList<Property>>(1);
 		targetNodeLabelList =  new ArrayList<String>(1);
 	}
 	
@@ -54,7 +53,7 @@ public class Request {
 		typedRequest = typedQuery;
 		linkLabelList = new ArrayList<String>(1);
 		directionList = new ArrayList<String>(1);
-		propertyList = new ArrayList<Property>(1);
+		propertyList = new ArrayList<ArrayList<Property>>(1);
 		targetNodeLabelList =  new ArrayList<String>(1);
 	}
 	
@@ -89,7 +88,7 @@ public class Request {
 	/**
 	 * @return the list who contains all the property of the link filters used in the query
 	 */
-	public ArrayList<Property> getPropertyList() {
+	public ArrayList<ArrayList<Property>> getPropertyList() {
 		return propertyList;
 	}
 
@@ -100,6 +99,49 @@ public class Request {
 		return targetNodeLabelList;
 	}
 
-	
+	/**
+	 * this method is used to compare 2 requests
+	 */
+	@Override
+	public boolean equals(Object request){
+		boolean is_equal = false;
+		
+		if ( ((this.linkLabelList.equals(((Request) request).getLinkLabelList()))) && //if all the content of the list and the request are equals
+			  (this.directionList.equals(((Request) request).getDirectionList())) && 
+			  (this.propertyList.equals(((Request) request).getPropertyList())) && 
+			  (this.targetNodeLabelList.equals(((Request) request).getTargetNodeLabelList())) && 
+			  (this.typedRequest.equals(((Request) request).getTypedRequest()))){
+				is_equal = true;	
+			}
+				
+		return is_equal;
+	}
 
+	/**
+	 * @param linkLabelList, the list of link label put in the request
+	 */
+	public void setLinkLabelList(ArrayList<String> linkLabelList) {
+		this.linkLabelList = linkLabelList;
+	}
+
+	/**
+	 * @param directionList, the list of directions put in the request
+	 */
+	public void setDirectionList(ArrayList<String> directionList) {
+		this.directionList = directionList;
+	}
+
+	/**
+	 * @param propertyList, the list of property put in the request
+	 */
+	public void setPropertyList(ArrayList<ArrayList<Property>> propertyList) {
+		this.propertyList = propertyList;
+	}
+
+	/**
+	 * @param targetNodeLabelList, the list of node label put in the request
+	 */
+	public void setTargetNodeLabelList(ArrayList<String> targetNodeLabelList) {
+		this.targetNodeLabelList = targetNodeLabelList;
+	}
 }
