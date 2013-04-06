@@ -30,6 +30,13 @@ public class Property{
 		this.label = label;
 		this.values = values;
 	}
+	
+	/**
+	 * Property constructor A property is always composed of a link with a set of attribute
+	 */
+	public Property(){
+		values = new ArrayList<String>(1);
+	}
 
 	/**
 	 * Return the label of a property
@@ -82,7 +89,7 @@ public class Property{
 			for(int i = 0; i <(size-1); i++){
 				sout += this.values.get(i) + ",";
 			}
-			sout += values.get(size) + "]";
+			sout += values.get(size-1) + "]";
 		}
 		return sout;
 	}
