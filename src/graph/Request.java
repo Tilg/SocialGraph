@@ -7,11 +7,6 @@ import java.util.ArrayList;
  * @author Florent
  */
 public class Request {
-
-	/**
-	 * the text of the request typed by the user
-	 */
-	private String typedRequest;
 	
 	/**
 	 * the list who contains all the label of the link filters used in the query
@@ -38,38 +33,12 @@ public class Request {
 	 */
 	public Request()
 	{
-		linkLabelList = new ArrayList<String>();
-		directionList = new ArrayList<String>();
-		propertyList = new ArrayList<ArrayList<Property>>();
-		targetNodeLabelList =  new ArrayList<String>();
+		linkLabelList = new ArrayList<String>(1);
+		directionList = new ArrayList<String>(1);
+		propertyList = new ArrayList<ArrayList<Property>>(1);
+		targetNodeLabelList =  new ArrayList<String>(1);
 	}
 	
-	/**
-	 * constructor who initialized the list and the query typed by the user
-	 * @param typedQuery, the query typed by the user
-	 */
-	public Request(String typedQuery)
-	{
-		typedRequest = typedQuery;
-		linkLabelList = new ArrayList<String>();
-		directionList = new ArrayList<String>();
-		propertyList = new ArrayList<ArrayList<Property>>();
-		targetNodeLabelList =  new ArrayList<String>();
-	}
-	
-	/**
-	 * @return the request type by the user
-	 */
-	public String getTypedRequest() {
-		return typedRequest;
-	}
-
-	/**
-	 * @param typedRequest, the request type by the user
-	 */
-	public void setTypedRequest(String typedRequest) {
-		this.typedRequest = typedRequest;
-	} 
 	
 	/**
 	 * @return ArrayList<String>, the list who contains all the label of the link wrote in the query
@@ -108,8 +77,7 @@ public class Request {
 		
 		if ( ((this.linkLabelList.equals(((Request) request).getLinkLabelList()))) && //if all the content of the list and the request are equals
 			  (this.directionList.equals(((Request) request).getDirectionList())) && 
-			  (this.targetNodeLabelList.equals(((Request) request).getTargetNodeLabelList())) && 
-			  (this.typedRequest.equals(((Request) request).getTypedRequest()))){
+			  (this.targetNodeLabelList.equals(((Request) request).getTargetNodeLabelList()))){
 			
 			// we check the arraylist of property list
 			

@@ -16,7 +16,7 @@ import parser.RequestParser;
 
 /**
  * class used to test the request parser
- * @author Vanessa
+ * @author Florent
  *
  */
 public class RequestParserTest {
@@ -34,21 +34,21 @@ public class RequestParserTest {
 	 */
 	@Test
 	public void testCheckRequest(){
-		Request request = new Request("friend > paul & employee - (since = 1989)(role = chief) techCo & like < (film = oz,water,taz) cinema");
+		String request = "friend > paul & employee - (since = 1989)(role = chief) techCo & like < (film = oz,water,taz) cinema";
 		
 		assertEquals(true,RequestParser.checkRequest(request));
 	}
 	
 	/**
-	 * this method test check if the getElementsFromRequest method of request parser correctly parse the request
+	 * this method test check if the getElementsFromRequest method of request parser correctly parse the request on the '&' char
 	 */
 	@Test
-	public void testGetElementsFromRequest(){
-		Request request = new Request("friend > paul & employee - (since = 1989) techCo & aaa < BBB");
+	public void testParseRequest1(){
+		String request = "friend > paul & employee - (since = 1989) techCo & aaa < BBB";
 		
-		ArrayList<String> elementsListRes = RequestParser.getElementsFromRequest(request);
+		ArrayList<String> elementsListRes = RequestParser.getElementsFromRequest(request,'&');
 
-		ArrayList<String> elementsListCorrect = new ArrayList<String>();
+		ArrayList<String> elementsListCorrect = new ArrayList<String>(1);
 		elementsListCorrect.add("friend > paul");
 		elementsListCorrect.add("employee - (since = 1989) techCo");
 		elementsListCorrect.add("aaa < BBB");
@@ -57,40 +57,53 @@ public class RequestParserTest {
 	}
 	
 	/**
+	 * this method test check if the getElementsFromRequest method of request parser correctly parse the request on the '|' char
+	 */
+	@Test
+	public void testParseRequest2(){
+		String request = "friend > paul | employee - (since = 1989) techCo & aaa < BBB";
+		
+		ArrayList<String> elementsListRes = RequestParser.getElementsFromRequest(request,'|');
+
+		ArrayList<String> elementsListCorrect = new ArrayList<String>(1);
+		elementsListCorrect.add("friend > paul");
+		elementsListCorrect.add("employee - (since = 1989) techCo & aaa < BBB");
+
+		assertEquals(elementsListRes,elementsListCorrect);
+	}
+	
+	/**
 	 * this method test check if the getFiltersFromRequest method of request parser correctly get all the filters from the request
 	 */
 	@Test
-	public void testGetFiltersFromRequest(){
-		Request request = new Request("friend > paul & employee - (since = 1989)(role = chief) techCo & like < (film = oz,water,taz) cinema");
-		RequestParser.getFiltersFromRequest(request);
+	public void testMatching1(){
 		
-		Request request2 = new Request("friend > paul & employee - (since = 1989)(role = chief) techCo & like < (film = oz,water,taz) cinema");
+		String typeRequest = "friend > paul & employee - (since = 1989)(role = chief) techCo & like < (film = oz,water,taz) cinema";
+		Request request = new Request();
+		RequestParser.getFiltersFromRequest(request,typeRequest);
+		
+		Request request2 = new Request();
 
 		//list of link tags
-		ArrayList<String> linkTagsList = new ArrayList<String>();
+		ArrayList<String> linkTagsList = new ArrayList<String>(1);
 		linkTagsList.add("friend");
 		linkTagsList.add("employee");
 		linkTagsList.add("like");
 		
 		//list of directions
-		ArrayList<String> directionList = new ArrayList<String>();
+		ArrayList<String> directionList = new ArrayList<String>(1);
 		directionList.add(">");
 		directionList.add("-");
 		directionList.add("<");
 		
 		//list of property
-		ArrayList<ArrayList<Property>> propertyListOfAllPropertyList = new ArrayList<ArrayList<Property>>();
+		ArrayList<ArrayList<Property>> propertyListOfAllPropertyList = new ArrayList<ArrayList<Property>>(1);
 		
 		//THE FIRST PART
-		ArrayList<String> emptyList = new ArrayList<String>();
-		emptyList.add("-1");
-		Property tmpProperty = new Property("-1",emptyList);
-		ArrayList<Property> tmpPropertyList = new ArrayList<Property>();
-		tmpPropertyList.add(tmpProperty);
-		propertyListOfAllPropertyList.add(tmpPropertyList);//the first part of the request doesn't have any property
+		propertyListOfAllPropertyList.add(new ArrayList<Property>(1));//the first part of the request doesn't have any property
 		
 		//THE SECOND PART
-		ArrayList<Property> propertyList1 = new ArrayList<Property>();
+		ArrayList<Property> propertyList1 = new ArrayList<Property>(1);
 		
 		ArrayList<String> value1 = new ArrayList<String>(); //(since = 1989)
 		value1.add("1989");
@@ -103,7 +116,7 @@ public class RequestParserTest {
 		propertyListOfAllPropertyList.add(propertyList1);
 		
 		//THE THIRD PART
-		ArrayList<Property> propertyList2 = new ArrayList<Property>();
+		ArrayList<Property> propertyList2 = new ArrayList<Property>(1);
 		
 		ArrayList<String> value3 = new ArrayList<String>(); //(film = oz,water,taz)
 		value3.add("oz");
@@ -114,7 +127,7 @@ public class RequestParserTest {
 		propertyListOfAllPropertyList.add(propertyList2);
 		
 		//list of node label
-		ArrayList<String> nodeTagList = new ArrayList<String>();
+		ArrayList<String> nodeTagList = new ArrayList<String>(1);
 		nodeTagList.add("paul");
 		nodeTagList.add("techCo");
 		nodeTagList.add("cinema");
@@ -127,4 +140,60 @@ public class RequestParserTest {
 		
 		assertEquals(true,request.equals(request2));
 	}
+	
+	/**
+	 * this method test check if the request where * is used are well match
+	 */
+	@Test
+	public void testMatching2(){
+		String typeRequest = "florent * & * > kad & * < (test =aaa) jaques & * *";
+		Request request = new Request();
+		RequestParser.getFiltersFromRequest(request,typeRequest);
+		
+		Request request2 = new Request();
+		
+		//list of link tags
+		ArrayList<String> linkTagsList = new ArrayList<String>(1);
+		linkTagsList.add("florent");
+		linkTagsList.add("*");
+		linkTagsList.add("*");
+		linkTagsList.add("*");
+		
+		//list of directions
+		ArrayList<String> directionList = new ArrayList<String>(1);
+		directionList.add("-");
+		directionList.add(">");
+		directionList.add("<");
+		directionList.add("-");
+		
+		//list of property
+		ArrayList<ArrayList<Property>> propertyListOfAllPropertyList = new ArrayList<ArrayList<Property>>(1);
+		
+		propertyListOfAllPropertyList.add(new ArrayList<Property>(1));
+		propertyListOfAllPropertyList.add(new ArrayList<Property>(1));
+		
+		ArrayList<Property> propertyList = new ArrayList<Property>(1);
+		ArrayList<String> value1 = new ArrayList<String>(); //(test= aaa)
+		value1.add("aaa");
+		propertyList.add(new Property("test",value1));
+		propertyListOfAllPropertyList.add(propertyList);
+		
+		propertyListOfAllPropertyList.add(new ArrayList<Property>(1));
+		
+		//list of node label
+		ArrayList<String> nodeTagList = new ArrayList<String>(1);
+		nodeTagList.add("*");
+		nodeTagList.add("kad");
+		nodeTagList.add("jaques");
+		nodeTagList.add("*");
+		
+		//we finish the request by setting the list
+		request2.setLinkLabelList(linkTagsList);
+		request2.setDirectionList(directionList);
+		request2.setPropertyList(propertyListOfAllPropertyList);
+		request2.setTargetNodeLabelList(nodeTagList);
+		
+		assertEquals(true,request.equals(request2));
+	}
+	
 }

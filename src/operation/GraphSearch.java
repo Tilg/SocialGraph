@@ -1,6 +1,6 @@
 package operation;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import parser.RequestParser;
 
@@ -45,30 +45,44 @@ public class GraphSearch extends GraphOperation{
 	 * @throws MalFormedRequestException 
 	 **/
 	@Override
-	public Graph execute() throws MalFormedRequestException{
-		Graph resultGraph = null;
-		HashMap<String,Node> resultTable = new HashMap<String,Node>();
+	public ArrayList<Node> execute(String typedRequest) throws MalFormedRequestException{
 		
-		if (request.getTypedRequest().equals("*")){//if the request is *, the result graph is the entire input graph
-			resultGraph = graph;
+		ArrayList<Node> resultList= new ArrayList<Node>(1);
+		
+
+		if (!RequestParser.checkRequest(typedRequest)) {
+			throw new MalFormedRequestException();
 		}
-		else{
-			if (!RequestParser.checkRequest(request)) {
-				throw new MalFormedRequestException();
-			}
-			else{ //if the request is wellformed
+		else{ //if the request is wellformed
+			
+			//we parse the request into sub request with the '|' character
+			ArrayList<String> elementsList = RequestParser.getElementsFromRequest(typedRequest,'|'); //parsing of the request into sub request on '|' char
+			
+			for (String subRequest : elementsList) // for each sub request
+			{
+				RequestParser.getFiltersFromRequest(request,subRequest); //we get the filters from the sub request
 				
-				//TODO ( Ajouter des test pour tester le parseur de requete )
+				resultList.addAll(getResultOfRequest()); // we add the result of the execution of the request to the result list 
 				
-				//codage de la recuperation des données dans la requete
-				RequestParser.getFiltersFromRequest(request);
-				
-				//codage de l'exploration du graphe avec les filtres stockés dans la requete
+				request = new Request(); // we reset the request filters
 			}
 		}
 
-		return resultGraph;
+		return resultList;
 	}
+	
+	/**
+	 * this method find all the result node for the request in parameter
+	 * @return the list of the node in the graph who are selected by the request 
+	 */
+	public ArrayList<Node> getResultOfRequest(){
+		ArrayList<Node> listeRes = new ArrayList<Node>(1);
+		
+		//TODO coder le parcours de graph 
+		
+		return listeRes;
+	}
+	
 	
 	public Search getSearchStrategy(){
 		return searchStrategy;

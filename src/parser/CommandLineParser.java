@@ -2,9 +2,11 @@ package parser;
 
 import exception.MalFormedRequestException;
 import graph.Graph;
+import graph.Node;
 import graph.Request;
 import graph.Search;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import operation.GraphOperation;
@@ -194,10 +196,10 @@ public class CommandLineParser{
 			}else if (request.equals(REQUEST_HELP_REQUEST)){
 				displayRequestHelpMessage();
 			}else{
-				((GraphSearch)operation).setRequest(new Request(request));
-				Graph results = new Graph();
+				((GraphSearch)operation).setRequest(new Request());
+				ArrayList<Node> results = new ArrayList<Node>(1);
 				try {
-					results = ((GraphSearch)operation).execute();
+					results = ((GraphSearch)operation).execute(request);
 				} catch (MalFormedRequestException e) {
 					System.out.println("your request is not well formed, type '" + REQUEST_HELP_REQUEST + "' for help.");
 					e.printStackTrace();
@@ -211,42 +213,44 @@ public class CommandLineParser{
 	
 	/**
 	 * This method display a welcome message
-	 * TODO bufferiser la chaine et l'afficher avec un seul println car c'est super long d'écrire a l'écran et le prog perd le process sur une demande d'ecriture ( remarque florent )
 	 */
 	public void displayWelcomeMessage(){
-		System.out.println("Welcome to the Graph Search monitor.");
-		System.out.println("Your Graph Search connection id is " + (int)(Math.random() * 9 + 1));
-		System.out.println("Server version: 0.1 Source distribution\n");
-		
-		System.out.println("Copyright (c) 2013, CEGT and/or its affiliates. All rights reserved\n");
-		
-		System.out.println("Graph Search is a registered trademark of CEGT Corporation and/or its");
-		System.out.println("affiliates. Other names may be trademarks of their respective owners.");
-		
-		System.out.println("Type '" + HELP_REQUEST + "' for help.");
+		System.out.println("Welcome to the Graph Search monitor.\n"+
+		"Your Graph Search connection id is " + (int)(Math.random() * 9 + 1)+"\n"+
+		"Server version: 0.1 Source distribution\n"+	
+		"Copyright (c) 2013, CEGT and/or its affiliates. All rights reserved\n"+
+		"Graph Search is a registered trademark of CEGT Corporation and/or its"+
+		"affiliates. Other names may be trademarks of their respective owners."+
+		"Type '" + HELP_REQUEST + "' for help.");
 	}
 	
 	/**
 	 * This method display an help message
-	 * TODO bufferiser la chaine et l'afficher avec un seul println car c'est super long d'écrire a l'écran et le prog perd le process sur une demande d'ecriture ( remarque florent )
 	 */
 	public void displayHelpMessage(){
-		System.out.println("\nCommand line arguments : ");
-		System.out.println(ARGUMENT_FILE_NAME + "\t<filename>\tFile path to the graph");
-		System.out.println(ARGUMENT_SEARCH_STRATEGY + "\t<" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST + "> or <"
+		System.out.println("\nCommand line arguments : \n"+
+		ARGUMENT_FILE_NAME + "\t<filename>\tFile path to the graph\n"+
+		ARGUMENT_SEARCH_STRATEGY + "\t<" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST + "> or <"
 				+ ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + ">\tSearch Strategy ('" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST
-				+ "' for breadth first search, or '" + ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + "' for depth first search)");
-		System.out.println(ARGUMENT_SEARCH_LEVEL + "\t<level>\t\tMax search level (positive integer)");
-		System.out.println(ARGUMENT_UNIQUENESS
-				+ "\t\t\t\tUniqueness (if this parameter is present, a node can be passed several time during a search.)");
-		System.out.println(QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
+				+ "' for breadth first search, or '" + ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + "' for depth first search)\n"+
+		ARGUMENT_SEARCH_LEVEL + "\t<level>\t\tMax search level (positive integer)\n"+
+		ARGUMENT_UNIQUENESS
+				+ "\t\t\t\tUniqueness (if this parameter is present, a node can be passed several time during a search.)\n"+
+		QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
 	}
 	
 	/**
-	 * This method display a request help message
+	 * This method display the request help message o
 	 */
 	public void displayRequestHelpMessage(){
-		System.out.println("\nTo make a well formed request, you need to have : \n\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n\t- nodeLabel\n\nYou can combine request with '&'\n\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\nYou can also see the entire graph with the request '*'");
+		System.out.println("\nTo make a well formed request, you need to have : \n" +
+				"\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n" +
+				"\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n" +
+				"\t- nodeLabel\n\n" +
+				"You can combine request with '&' or '|'\n" +
+				"\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\n" +
+				"'*' can replace any link tag or node name\n" +
+				"You can also see the entire graph with the request '*'");
 	}
 	
 	/**
