@@ -38,10 +38,10 @@ public class Request {
 	 */
 	public Request()
 	{
-		linkLabelList = new ArrayList<String>(1);
-		directionList = new ArrayList<String>(1);
-		propertyList = new ArrayList<ArrayList<Property>>(1);
-		targetNodeLabelList =  new ArrayList<String>(1);
+		linkLabelList = new ArrayList<String>();
+		directionList = new ArrayList<String>();
+		propertyList = new ArrayList<ArrayList<Property>>();
+		targetNodeLabelList =  new ArrayList<String>();
 	}
 	
 	/**
@@ -51,10 +51,10 @@ public class Request {
 	public Request(String typedQuery)
 	{
 		typedRequest = typedQuery;
-		linkLabelList = new ArrayList<String>(1);
-		directionList = new ArrayList<String>(1);
-		propertyList = new ArrayList<ArrayList<Property>>(1);
-		targetNodeLabelList =  new ArrayList<String>(1);
+		linkLabelList = new ArrayList<String>();
+		directionList = new ArrayList<String>();
+		propertyList = new ArrayList<ArrayList<Property>>();
+		targetNodeLabelList =  new ArrayList<String>();
 	}
 	
 	/**
@@ -104,15 +104,31 @@ public class Request {
 	 */
 	@Override
 	public boolean equals(Object request){
-		boolean is_equal = false;
+		boolean is_equal = true;
 		
 		if ( ((this.linkLabelList.equals(((Request) request).getLinkLabelList()))) && //if all the content of the list and the request are equals
 			  (this.directionList.equals(((Request) request).getDirectionList())) && 
-			  (this.propertyList.equals(((Request) request).getPropertyList())) && 
 			  (this.targetNodeLabelList.equals(((Request) request).getTargetNodeLabelList())) && 
 			  (this.typedRequest.equals(((Request) request).getTypedRequest()))){
-				is_equal = true;	
-			}
+			
+			// we check the arraylist of property list
+			
+			if (! (this.propertyList.size() == ((Request) request).getPropertyList().size())){
+				is_equal = false;
+			}else{ // we check if all the property list are equals
+				
+				for (int i=0; i<this.propertyList.size();i++){ // for each propertyList
+					
+					if (this.propertyList.get(i).size()>0){ // if we have property
+						
+						if (! (this.propertyList.get(i).equals(((Request) request).getPropertyList().get(i)))){ // if two list are not equals 
+							is_equal = false;
+							break;
+						}
+					}
+				}
+			}	
+		}
 				
 		return is_equal;
 	}

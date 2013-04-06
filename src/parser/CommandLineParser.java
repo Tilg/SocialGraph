@@ -58,6 +58,10 @@ public class CommandLineParser{
 	 * Graph operation that will be execute
 	 */
 	private GraphOperation operation;
+	/**
+	 * Scanner used to read the request - singleton
+	 */
+	private Scanner scanner;
 	
 	public CommandLineParser(){
 		super();
@@ -176,7 +180,9 @@ public class CommandLineParser{
 	 * This method is waiting a request from the user, execute it and display the result until the user enters "quit"
 	 */
 	public void listenRequest(){
-		Scanner scanner = new Scanner(System.in);
+		if (scanner == null){
+			scanner = new Scanner(System.in);
+		}
 		boolean continu = true;
 		while (continu){
 			System.out.println("\nEnter your request :");

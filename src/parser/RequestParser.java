@@ -66,9 +66,6 @@ public class RequestParser{
 	 */
 	public static boolean checkRequest(Request request){
 		REQUEST_MATCHER = REQUEST_PATTERN.matcher(request.getTypedRequest());
-System.out.println("*****");
-System.out.println(REQUEST_MATCHER.group());
-System.out.println("*****");
 		return REQUEST_MATCHER.find();
 	}
 
@@ -81,12 +78,12 @@ System.out.println("*****");
 		ArrayList<String> elementsList = getElementsFromRequest(request); //parsing of the request into sub request
 		
 		for ( String element : elementsList){ // for each element
-System.out.println("element : "+element);
-System.out.println(ELEMENT_PATTERN.toString());
+
 			ELEMENT_MATCHER = ELEMENT_PATTERN.matcher(element);
-System.out.println(ELEMENT_MATCHER.group());
+			ELEMENT_MATCHER.find(); // we need to make a find() before a group()
+
 			String linkLabelString = ELEMENT_MATCHER.group(LINK_LABEL_GROUP_NUMBER);
-System.out.println("linkLabelString : "+linkLabelString);
+
 			linkLabelString = linkLabelString.trim();
 			request.getLinkLabelList().add(linkLabelString); // we add to the link_label_List each linkLabel Match in the different elements
 			
@@ -100,16 +97,18 @@ System.out.println("linkLabelString : "+linkLabelString);
 			
 			PROPERTY_MATCHER = PROPERTIES_PATTERN.matcher(element);
 			
-			if (!PROPERTY_MATCHER.find()){ // if we don't match property 
-				request.getPropertyList().add(null);
-			}
-			else{ // if we have property to get
-				ArrayList<Property> tmpPropertyList = new ArrayList<Property>(1);
+			boolean flag = PROPERTY_MATCHER.find();
+			
+			if (!flag){ // if we don't match property 
+				
+				request.getPropertyList().add(new ArrayList<Property>());// we add and empty list
+			}else{ // if we have property to get
+				ArrayList<Property> tmpPropertyList = new ArrayList<Property>();
 				
 				Property tmpProperty;
 				ArrayList<String> allValues;
 				
-				while (PROPERTY_MATCHER.find()) {// while there is property
+				while (flag) {// while there is property
 					
 					tmpProperty = new Property();
 					allValues = new ArrayList<String>(1);
@@ -120,22 +119,22 @@ System.out.println("linkLabelString : "+linkLabelString);
 					
 					if (propertyValues.indexOf(',')==-1){//if you don't have a coma, you have only 1 value 
 						allValues.add(propertyValues.trim());
-					}
-					else{// we parse all the values
-						
+					}else{// we parse all the values
 						while (propertyValues.indexOf(',')!=-1 )
 						{
-							allValues.add(propertyValues.substring(0, propertyValues.indexOf(',')));
+							allValues.add(propertyValues.substring(0, propertyValues.indexOf(',')).trim());
 							propertyValues = propertyValues.substring(propertyValues.indexOf(',')+1, propertyValues.length());
 						}
-						allValues.add(propertyValues); 
+						allValues.add(propertyValues.trim()); 
 					}
 					tmpProperty.setValues(allValues);//i set the property values
 					
 					tmpPropertyList.add(tmpProperty);// i add the property to the list of property of the request
+					
+					flag = PROPERTY_MATCHER.find(); //i try to find the next property of the element
 				}
 				
-				request.getPropertyList().add(tmpPropertyList); //i add the property to the list of all property found in the request
+				request.getPropertyList().add(tmpPropertyList); //i add the property to the list of all property found in the request		
 			}
 		}
 	}
@@ -148,13 +147,12 @@ System.out.println("linkLabelString : "+linkLabelString);
 	 */
 	public static ArrayList<String> getElementsFromRequest(Request request)
 	{
-		ArrayList<String> res = new ArrayList<String>(1);
+		ArrayList<String> res = new ArrayList<String>();
 		String requestToParse = request.getTypedRequest();
 		
 		if (requestToParse.indexOf('&')==-1){ //if the request don't contains the & character, it's not a request composed with different elements
 			res.add(requestToParse.trim()); 
-		}
-		else{//if the request is compose by differents elements separate by the & character
+		}else{//if the request is compose by differents elements separate by the & character
 			
 			while (requestToParse.indexOf('&')!=-1 ){
 				res.add(requestToParse.substring(0, requestToParse.indexOf('&')).trim());

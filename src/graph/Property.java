@@ -89,7 +89,7 @@ public class Property{
 			for(int i = 0; i <(size-1); i++){
 				sout += this.values.get(i) + ",";
 			}
-			sout += values.get(size) + "]";
+			sout += values.get(size-1) + "]";
 		}
 		return sout;
 	}
