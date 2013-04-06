@@ -48,7 +48,7 @@ public class RequestParserTest {
 		
 		ArrayList<String> elementsListRes = RequestParser.getElementsFromRequest(request);
 
-		ArrayList<String> elementsListCorrect = new ArrayList<String>(1);
+		ArrayList<String> elementsListCorrect = new ArrayList<String>();
 		elementsListCorrect.add("friend > paul");
 		elementsListCorrect.add("employee - (since = 1989) techCo");
 		elementsListCorrect.add("aaa < BBB");
@@ -67,40 +67,45 @@ public class RequestParserTest {
 		Request request2 = new Request("friend > paul & employee - (since = 1989)(role = chief) techCo & like < (film = oz,water,taz) cinema");
 
 		//list of link tags
-		ArrayList<String> linkTagsList = new ArrayList<String>(1);
+		ArrayList<String> linkTagsList = new ArrayList<String>();
 		linkTagsList.add("friend");
 		linkTagsList.add("employee");
 		linkTagsList.add("like");
 		
 		//list of directions
-		ArrayList<String> directionList = new ArrayList<String>(1);
+		ArrayList<String> directionList = new ArrayList<String>();
 		directionList.add(">");
 		directionList.add("-");
 		directionList.add("<");
 		
 		//list of property
-		ArrayList<ArrayList<Property>> propertyListOfAllPropertyList = new ArrayList<ArrayList<Property>>(1);
+		ArrayList<ArrayList<Property>> propertyListOfAllPropertyList = new ArrayList<ArrayList<Property>>();
 		
 		//THE FIRST PART
-		propertyListOfAllPropertyList.add(null);//the first part of the request doesn't have any property
+		ArrayList<String> emptyList = new ArrayList<String>();
+		emptyList.add("-1");
+		Property tmpProperty = new Property("-1",emptyList);
+		ArrayList<Property> tmpPropertyList = new ArrayList<Property>();
+		tmpPropertyList.add(tmpProperty);
+		propertyListOfAllPropertyList.add(tmpPropertyList);//the first part of the request doesn't have any property
 		
 		//THE SECOND PART
-		ArrayList<Property> propertyList1 = new ArrayList<Property>(1);
+		ArrayList<Property> propertyList1 = new ArrayList<Property>();
 		
-		ArrayList<String> value1 = new ArrayList<String>(1); //(since = 1989)
+		ArrayList<String> value1 = new ArrayList<String>(); //(since = 1989)
 		value1.add("1989");
 		propertyList1.add(new Property("since",value1));
 		
-		ArrayList<String> value2 = new ArrayList<String>(1); //(role = chief)
+		ArrayList<String> value2 = new ArrayList<String>(); //(role = chief)
 		value2.add("chief");
 		propertyList1.add(new Property("role",value2));
 		
 		propertyListOfAllPropertyList.add(propertyList1);
 		
 		//THE THIRD PART
-		ArrayList<Property> propertyList2 = new ArrayList<Property>(1);
+		ArrayList<Property> propertyList2 = new ArrayList<Property>();
 		
-		ArrayList<String> value3 = new ArrayList<String>(1); //(since = 1989)
+		ArrayList<String> value3 = new ArrayList<String>(); //(film = oz,water,taz)
 		value3.add("oz");
 		value3.add("water");
 		value3.add("taz");
@@ -109,7 +114,7 @@ public class RequestParserTest {
 		propertyListOfAllPropertyList.add(propertyList2);
 		
 		//list of node label
-		ArrayList<String> nodeTagList = new ArrayList<String>(1);
+		ArrayList<String> nodeTagList = new ArrayList<String>();
 		nodeTagList.add("paul");
 		nodeTagList.add("techCo");
 		nodeTagList.add("cinema");
@@ -120,6 +125,6 @@ public class RequestParserTest {
 		request2.setPropertyList(propertyListOfAllPropertyList);
 		request2.setTargetNodeLabelList(nodeTagList);
 		
-		assertEquals(request,request2);
+		assertEquals(true,request.equals(request2));
 	}
 }
