@@ -1,6 +1,5 @@
 package parser;
 
-import exception.MalFormedRequestException;
 import graph.Graph;
 
 import graph.Node;
@@ -200,12 +199,9 @@ public class CommandLineParser{
 
 				((GraphSearch)operation).setRequest(new Request());
 				ArrayList<Node> results = new ArrayList<Node>(1);
-				try {
-					results = ((GraphSearch)operation).execute(request);
-				} catch (MalFormedRequestException e) {
-					System.out.println("your request is not well formed, type '" + REQUEST_HELP_REQUEST + "' for help.");
-					e.printStackTrace();
-				}
+				
+				results = ((GraphSearch)operation).execute(request);
+				
 				System.out.println("Results : ");
 				System.out.println(results);
 			}

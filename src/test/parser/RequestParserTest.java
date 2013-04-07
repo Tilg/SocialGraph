@@ -16,12 +16,7 @@ import parser.RequestParser;
 
 /**
  * class used to test the request parser
-<<<<<<< HEAD
- * @author Vanessa
-=======
  * @author Florent
->>>>>>> request_parser
- *
  */
 public class RequestParserTest {
 

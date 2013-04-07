@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import parser.RequestParser;
 
-import exception.MalFormedRequestException;
-
 import graph.Graph;
 import graph.Node;
 import graph.Request;
@@ -42,16 +40,14 @@ public class GraphSearch extends GraphOperation{
 	
 	/** this method execute a request on the graph who represent the text file in parameter 
 	 * @return Graph, a graph who is a part of the main graph who match with the request
-	 * @throws MalFormedRequestException 
 	 **/
 	@Override
-	public ArrayList<Node> execute(String typedRequest) throws MalFormedRequestException{
+	public ArrayList<Node> execute(String typedRequest){
 		
 		ArrayList<Node> resultList= new ArrayList<Node>(1);
 		
-
 		if (!RequestParser.checkRequest(typedRequest)) {
-			throw new MalFormedRequestException();
+			System.out.println("malformed request !\nTo have information on the request format use the command 'request help'");
 		}
 		else{ //if the request is wellformed
 			

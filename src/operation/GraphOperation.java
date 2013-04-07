@@ -2,7 +2,6 @@ package operation;
 
 import java.util.ArrayList;
 
-import exception.MalFormedRequestException;
 import graph.Graph;
 import graph.Node;
 
@@ -24,7 +23,7 @@ public abstract class GraphOperation{
 	 * @throws MalFormedRequestException 
 	 */
 
-	public abstract ArrayList<Node> execute(String request) throws MalFormedRequestException;
+	public abstract ArrayList<Node> execute(String request);
 	
 	public Graph getGraph(){
 		return graph;
