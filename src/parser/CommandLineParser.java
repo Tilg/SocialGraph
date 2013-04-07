@@ -226,8 +226,7 @@ public class CommandLineParser{
 				+ ">\tSearch Strategy ('" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST + "' for breadth first search, or '"
 				+ ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + "' for depth first search)\n" + ARGUMENT_SEARCH_LEVEL
 				+ "\t<level>\t\tMax search level (positive integer)\n" + ARGUMENT_UNIQUENESS
-				+ "\t\t\t\tUniqueness (if this parameter is present, a node can be passed several time during a search.)\n" + QUIT_REQUEST
-				+ " \t\t\t\tQuit Graph Search monitor");
+				+ "\t<level>\t\tUniqueness (positive integer), number times that a node can be visited\n");
 	}
 	
 	/**
@@ -238,7 +237,10 @@ public class CommandLineParser{
 				+ "\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n"
 				+ "\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n" + "\t- nodeLabel\n\n"
 				+ "You can combine request with '&' or '|'\n" + "\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\n"
-				+ "'*' can replace any link tag or node name\n" + "You can also see the entire graph with the request '*'");
+				+ "'*' can replace any link tag or node name\n"
+				+ "You can also see the entire graph with the request '*'\n\nSpecial requests :\n\t" + HELP_REQUEST + " \t\t\t\tShow help\n\t"
+				+ QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
+		
 	}
 	
 	/**
