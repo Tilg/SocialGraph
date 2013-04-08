@@ -21,6 +21,11 @@ public class Node{
 	protected ArrayList<Link> links;
 	
 	/**
+	 * the number of times that you can select the node during the search
+	 */
+	protected int visited;
+	
+	/**
 	 * Creates a node. The identifier (label) is normalized: no spaces, no upperCase
 	 * 
 	 * @param label
@@ -29,6 +34,7 @@ public class Node{
 	public Node(String label,ArrayList<Link> links){
 		this.label = normalize(label);
 		this.links = links;
+		visited = 0;
 	}
 	
 	/**
@@ -39,8 +45,23 @@ public class Node{
 	public Node(String label){
 		this.label = normalize(label);
 		links = new ArrayList<Link>();
+		visited = 0;
 	}
 	
+	/**
+	 * @return the number of time where the node is selected
+	 */
+	public int getVisited() {
+		return visited;
+	}
+
+	/**
+	 * @param visited, the number of time that the node is visited
+	 */
+	public void setVisited(int visited) {
+		this.visited = visited;
+	}
+
 	/**
 	 * Returns label of a node
 	 * 

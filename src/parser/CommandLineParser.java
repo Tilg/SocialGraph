@@ -88,7 +88,7 @@ public class CommandLineParser{
 		String fileName = "";
 		Search searchStrategy = Search.DEPTH_FIRST;
 		int searchLevel = -1;// by default we search in all the graph
-		boolean uniqueness = true; // a node cannot be visit more than one time by default
+		int uniqueness = 1; // a node cannot be visit more than one time by default
 		
 		if (args.length == 0){
 			System.out.println("There is no argument");
@@ -124,7 +124,14 @@ public class CommandLineParser{
 					parsingArgumentError = true;
 				}
 			}else if (argument.equals(ARGUMENT_UNIQUENESS)){
-				uniqueness = false;
+				if (isPositiveInteger(nextArgument)){
+					uniqueness = Integer.parseInt(nextArgument);
+					i++;
+				}else{
+					// error : argument value (for search level) not a positive integer
+					System.out.println("error argument not allowed '" + nextArgument + "' for '" + argument + "'");
+					parsingArgumentError = true;
+				}
 			}else{
 				// error argument not allowed
 				System.out.println("error argument not allowed '" + nextArgument + "'");
@@ -134,10 +141,8 @@ public class CommandLineParser{
 		
 		if (i < args.length){
 			String lastArgument = args[i];
-			if (lastArgument.equals(ARGUMENT_UNIQUENESS)){
-				uniqueness = false;
-			}else if (lastArgument.equals(ARGUMENT_FILE_NAME) || lastArgument.equals(ARGUMENT_SEARCH_LEVEL)
-					|| lastArgument.equals(ARGUMENT_SEARCH_STRATEGY)){
+			if (lastArgument.equals(ARGUMENT_FILE_NAME) || lastArgument.equals(ARGUMENT_SEARCH_LEVEL)
+				|| lastArgument.equals(ARGUMENT_SEARCH_STRATEGY) || (lastArgument.equals(ARGUMENT_UNIQUENESS))){
 				System.out.println("Missing argument value for '" + lastArgument + "'");
 				parsingArgumentError = true;
 			}else{
@@ -188,7 +193,7 @@ public class CommandLineParser{
 		boolean continu = true;
 		while (continu){
 			System.out.println("\nEnter your request :");
-			String request = scanner.next();
+			String request = scanner.nextLine();
 			if (request.equals(QUIT_REQUEST)){
 				continu = false;
 			}else if (request.equals(HELP_REQUEST)){
@@ -219,7 +224,7 @@ public class CommandLineParser{
 		"Copyright (c) 2013, CEGT and/or its affiliates. All rights reserved\n"+
 		"Graph Search is a registered trademark of CEGT Corporation and/or its"+
 		"affiliates. Other names may be trademarks of their respective owners."+
-		"Type '" + HELP_REQUEST + "' for help.");
+		"Type '" + HELP_REQUEST + "' for help.\n\n");
 	}
 	
 	/**
@@ -234,7 +239,7 @@ public class CommandLineParser{
 		ARGUMENT_SEARCH_LEVEL + "\t<level>\t\tMax search level (positive integer)\n"+
 		ARGUMENT_UNIQUENESS
 				+ "\t\t\t\tUniqueness (if this parameter is present, a node can be passed several time during a search.)\n"+
-		QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
+		QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor\n\n");
 	}
 	
 	/**
@@ -242,13 +247,13 @@ public class CommandLineParser{
 	 */
 	public void displayRequestHelpMessage(){
 		System.out.println("\nTo make a well formed request, you need to have : \n" +
-				"\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n" +
-				"\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n" +
-				"\t- nodeLabel\n\n" +
-				"You can combine request with '&' or '|'\n" +
-				"\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\n" +
-				"'*' can replace any link tag or node name\n" +
-				"You can also see the entire graph with the request '*'");
+		"\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n" +
+		"\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n" +
+		"\t- nodeLabel\n\n" +
+		"You can combine request with '&' or '|'\n" +
+		"\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\n" +
+		"'*' can replace any link tag or node name\n" +
+		"You can also see the entire graph with the request '*'");
 	}
 	
 	/**
