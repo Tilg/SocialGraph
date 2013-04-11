@@ -1,15 +1,15 @@
 package operation;
 
+import java.util.ArrayList;
+
+import parser.RequestParser;
+
 import graph.Graph;
 import graph.Link;
 import graph.Node;
 import graph.Property;
 import graph.Request;
 import graph.Search;
-
-import java.util.ArrayList;
-
-import parser.RequestParser;
 
 /**
  * @author omar & florent
@@ -32,12 +32,6 @@ public class GraphSearch extends GraphOperation{
 	 */
 	protected Request request;
 	
-	/**
-	 * @param graph, the principal structure
-	 * @param searchStrategy, the search strategy in the graph
-	 * @param searchLevel, level of inception (ex: level 2 with "friend annie", return the friends of the friend of annie) 
-	 * @param uniquenessSearch, the number of time that we can select a node
-	 */
 	public GraphSearch(Graph graph,Search searchStrategy,int searchLevel,int uniquenessSearch){
 		super(graph);
 		this.searchStrategy = searchStrategy;
@@ -58,11 +52,6 @@ public class GraphSearch extends GraphOperation{
 			System.out.println("malformed request !\nTo have information on the request format use the command 'request help'");
 		}
 		else{ //if the request is wellformed
-			
-			//we reset the number of visit of each node of the graph to have a clean graph for each request
-			for (Node nodetmp : graph.getNodes().values()){
-				nodetmp.setVisited(0);
-			}
 			
 			RequestParser.ONE_ELEMENT_MATCHER = RequestParser.ONE_ELEMENT_PATTERN.matcher(typedRequest);
 			RequestParser.ONE_ELEMENT_MATCHER.find();
@@ -94,42 +83,15 @@ public class GraphSearch extends GraphOperation{
 	 * @return the list of the node in the graph who are selected by the request 
 	 */
 	public ArrayList<Node> getResultOfRequest(){
-		ArrayList<ArrayList<Node>> resultList =  new ArrayList<ArrayList<Node>>(1);
-		ArrayList<Node> res = new ArrayList<Node>(1);
+		ArrayList<Node> listeRes = new ArrayList<Node>(1);
 		
-		ArrayList<Node> graphNodeList = new ArrayList<Node>(1);
-		graphNodeList.addAll(graph.getNodes().values());
+		listeRes.addAll(graph.getNodes().values());
 		
 		for (int i=0; i<request.getLinkLabelList().size();i++){ // each loop represent the execution of one element of the request, ex :"likes paul & employees > techCo", 2 loops, 1 for "likes paul" and 1 for "employees > techCo"
-			
-			for (Node nodetmp : graph.getNodes().values()){
-				nodetmp.setVisited(0);
-			}
-			
-			resultList.add(applyFilters(request.getLinkLabelList().get(i),request.getDirectionList().get(i),request.getPropertyList().get(i),request.getTargetNodeLabelList().get(i),graphNodeList));
+			listeRes = applyFilters(request.getLinkLabelList().get(i),request.getDirectionList().get(i),request.getPropertyList().get(i),request.getTargetNodeLabelList().get(i),listeRes);
 		}
 		
-		System.out.println();//TODO
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		for (ArrayList<Node> list : resultList){
-			System.out.println(list);
-		}
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		
-		// we get the common elements of all the list
-		res = resultList.get(0);
-		if (resultList.size()>1){
-			for (int j=1;j<resultList.size();j++){ 
-				res.retainAll(resultList.get(j));
-			}
-		}
-
-		return res;
+		return listeRes;
 	}
 	
 	/**
@@ -148,76 +110,92 @@ public class GraphSearch extends GraphOperation{
 		ArrayList<Node> listeRes = new ArrayList<Node>(1);
 		ArrayList<Node> tmp = new ArrayList<Node>(1); // list used to handle the searchStrategy
 		ArrayList<Node> tmp2 = new ArrayList<Node>(1);
+		boolean first=true;// a flag used to stop the while when i=0
 		String currentNodeLabel="";
 		
 		for (int i =0; i< searchLevel;i++){ // loop on the search level, ex : friend of the friend of natasha, 1rst loop "friend natasha", 2nd loop "friend *" 
 				
 			if (i==0){// if we are in the first loop we just execute the request without the searchStrategy
-				
-				Node currentNode = getNodeFromList(nodeListe,targetNode);
-				
-				if (currentNode != null){
-					tmp2.add(currentNode); //the current node is the node used in the request
-				}
+				currentNodeLabel = targetNode; //the current node is the node used in the request
 			}else{
 				tmp2=new ArrayList<Node>(tmp); //we create a new list
 				tmp.clear();//we drop all the element of tmplist to add new element of this loop
 			}
 			
-			while(tmp2.size()>0){
+			while(tmp2.size()>0 || first){
 				
 				currentNodeLabel = tmp2.get(0).getLabel();//the current node is the first node of the temporaly list
 				tmp2.remove(0); //we delete the node from the list
+				
+				if (direction.equals(">")){ // simple case, just get the node in the table
 					
-				if (i == searchLevel-1){ //if the search level is >1, we make a recurtial filtering. if i ==searchLevel-1, it's the last time that we make the recursivity
-					
-					ArrayList<Node> filtredList = getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe);
-					
-					if (searchStrategy == Search.DEPTH_FIRST){
-						listeRes.addAll(0,filtredList);
-					}else{
-						listeRes.addAll(filtredList);
-					}
+					if (i == searchLevel-1){ //if we are in the last loop
+						if (searchStrategy == Search.DEPTH_FIRST){ // if we used the depth_first search
+							listeRes.addAll(0,getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));//we add in head
+						}else{ // we used the breadth_first
+							listeRes.addAll(getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));//we add in queue
+						}
 						
-				}else{
-					if (searchStrategy == Search.DEPTH_FIRST){
-						tmp.addAll(0,getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe));
-					}else{
-						tmp.addAll(getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe));
+					}else{//if its not the last loop we don't have the result node but just temp note
+						if (searchStrategy == Search.DEPTH_FIRST){
+							tmp.addAll(0,getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));
+						}else{
+							tmp.addAll(getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));
+						}
 					}
+					
+					
+				}else if (direction.equals("<")){// complex case, get the node in the link of all the node in the table
+					
+					if (i == searchLevel-1){ 
+						if (searchStrategy == Search.DEPTH_FIRST){
+							listeRes.addAll(0,getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}else{
+							listeRes.addAll(getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}
+							
+					}else{
+						if (searchStrategy == Search.DEPTH_FIRST){
+							tmp.addAll(0,getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}else{
+							tmp.addAll(getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}
+					}
+					
+					
+				}else{ // "-" case
+					
+					if (i == searchLevel-1){ //if we are in the last loop
+						if (searchStrategy == Search.DEPTH_FIRST){
+							listeRes.addAll(0,getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));
+							listeRes.addAll(0,getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}else{
+							listeRes.addAll(getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));
+							listeRes.addAll(getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}
+						
+					}else{
+						if (searchStrategy == Search.DEPTH_FIRST){
+							tmp.addAll(0,getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));
+							tmp.addAll(0,getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}else{
+							tmp.addAll(getNodeOutCase(link,propertyList,currentNodeLabel,nodeListe));
+							tmp.addAll(getNodeInCase(link,propertyList,currentNodeLabel,nodeListe));
+						}
+					}	
 				}
-			}	
+				
+				if (first){ // we put the flag to false a the end of the first loop
+					first = false;
+				}
+			}
+			
+				
 		}
 		return listeRes;
 	}
 
-	/**
-	 * this method is used to find a node in a node list using the label of the node
-	 * @param nodeListe, the list of node
-	 * @param targetNode, the label of the searched node
-	 * @return the node who have the label in param if he is in the list, null otherwise
-	 */
-	private Node getNodeFromList(ArrayList<Node> nodeListe, String targetNode) {
-		Node res =null;
-		for (Node nodeTmp : nodeListe){
-			if (nodeTmp.getLabel().equals(targetNode)){
-				res = nodeTmp;
-			}
-		}
-		
-		return res;
-	}
-
-	/** this method apply the link label filter,the direction filter, property filter and handle the uniqueness param
-	 *  
-	 * @param link, the label of the link in the request
-	 * @param direction , the direction filter 
-	 * @param propertyList, the property list specify in the request
-	 * @param currentNodeLabel, the label of the node on which we apply filters
-	 * @param nodeList, the node list in which we check for nodes who match with the request
-	 * @return
-	 */
-	private ArrayList<Node> getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList) {
+	private ArrayList<Node> getNodeOutCase(String link, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList) {
 		ArrayList<Node> listeRes = new ArrayList<Node>(1);
 		ArrayList<Link> linksListTmp = null;
 		
@@ -228,10 +206,7 @@ public class GraphSearch extends GraphOperation{
 				
 				for (Link linkTmp : linksListTmp){ // for each link of this node
 					
-					boolean linkTest = linkTmp.getLabel().equals(link);
-					boolean propertyTest = checkProperty(linkTmp,propertyList);
-					boolean directionTest = checkDirection(linkTmp,direction);
-					if (linkTest && propertyTest && directionTest){	// we check the link label, the direction & we check the property list
+					if (linkTmp.getLabel().equals(link) && linkTmp.getProperties().equals(propertyList)){	// we check the link label & we check the property list
 						
 						int numberOfVisit = graph.getNodes().get(linkTmp.getDestination().getLabel()).getVisited();// we check the uniqueSearch Level
 						if (numberOfVisit<uniquenessSearch){ // if the node is visited less times that the uniquenessSearchLevel
@@ -243,7 +218,6 @@ public class GraphSearch extends GraphOperation{
 							}
 							
 							linkTmp.getDestination().setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
-							
 						}
 					}
 				}
@@ -252,46 +226,39 @@ public class GraphSearch extends GraphOperation{
 		
 		return listeRes;
 	}
-
-	/**
-	 * this method check if the propertyList in param match with the propertyList of the link in param
-	 * @param linkTmp, the link to examine
-	 * @param propertyList, the propertyList that we wan
-	 * @return boolean, true if the direction match with the direction of the link, else otherwise
-	 */
-	private boolean checkProperty(Link linkTmp, ArrayList<Property> propertyList) {
-		boolean res = false;
-		if (propertyList.size()==0){ // if we don't have a property filter in the request, the list of property in the link don't matter
-			res = true;
-		}else{
-			if (linkTmp.getProperties().equals(propertyList)){ // if the 2 list are equals
-				res = true;
+	
+	private ArrayList<Node> getNodeInCase(String link, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList) {
+		ArrayList<Node> listeRes = new ArrayList<Node>(1);
+		ArrayList<Link> linksListTmp = null;
+		
+		for ( Node curentNode : nodeList){ //for each node in the nodeList in parameter
+			
+			linksListTmp = curentNode.getLinks(); 
+			for (Link linkTmp : linksListTmp){ // for each link of this node
+			
+				if (linkTmp.getDestination().getLabel().equals(currentNodeLabel)){ //if the label of the destination node in the link match with the node in param
+					
+					if (linkTmp.getLabel().equals(link) && linkTmp.getProperties().equals(propertyList)){	// we check the link label & we check the property list
+						
+						int numberOfVisit = graph.getNodes().get(curentNode.getLabel()).getVisited();// we check the uniqueSearch Level
+						if (numberOfVisit<uniquenessSearch){ // if the node is visited less times that the uniquenessSearchLevel
+							
+							if (searchStrategy == Search.DEPTH_FIRST){
+								listeRes.add(0, curentNode);
+							}else{
+								listeRes.add(curentNode);
+							}
+							
+							curentNode.setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
+						}
+					}
+				}
 			}
-		}
-
-		return res;
-	}
-
-	/**
-	 * this method check if the direction in param match with the direction of the link in param
-	 * @param linkTmp, the link to examine
-	 * @param direction, the direction that we wan
-	 * @return boolean, true if the direction match with the direction of the link, else otherwise
-	 */
-	private boolean checkDirection(Link linkTmp, String direction) {
-		
-		boolean res = false;
-		String linkDirection = linkTmp.getDirection().toString();
-		
-		if (linkDirection.equals("IN") && direction.equals("<")){
-			res = true;
-		}else if(linkDirection.equals("OUT") && direction.equals(">")){
-			res = true;
-		}else if(direction.equals("-")){
-			res = true;
+					
 		}
 		
-		return res;
+		
+		return listeRes;
 	}
 
 	/**

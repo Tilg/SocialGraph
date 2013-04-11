@@ -162,6 +162,5 @@ public class Link{
 		
 		return is_equal;
 	}
-
 	
 }
