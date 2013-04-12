@@ -26,7 +26,7 @@ public class RequestParser{
 	/**
 	 * this patern is used to split the request into sub-request by parsing the OR symbol '|'
 	 */
-	public static final Pattern ONE_ELEMENT_PATTERN = Pattern.compile("([^\\|]+)");
+	public static final Pattern ONE_ELEMENT_PATTERN = Pattern.compile("([^\\| ]+)");
 	/**
 	 * this matcher allow us to get the sub-sequences
 	 */
