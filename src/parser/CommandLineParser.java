@@ -1,10 +1,11 @@
 package parser;
 
-import exception.MalFormedRequestException;
 import graph.Graph;
+import graph.Node;
 import graph.Request;
 import graph.Search;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import operation.GraphOperation;
@@ -47,10 +48,6 @@ public class CommandLineParser{
 	 */
 	public final static String HELP_REQUEST = "help";
 	/**
-	 * This is the string which permit to see the request help message when it is entered (as a request)
-	 */
-	public final static String REQUEST_HELP_REQUEST = "request help";
-	/**
 	 * Graph on which operations will be executed.
 	 */
 	private Graph graph;
@@ -65,7 +62,6 @@ public class CommandLineParser{
 	
 	public CommandLineParser(){
 		super();
-		displayWelcomeMessage();
 	}
 	
 	/**
@@ -81,12 +77,12 @@ public class CommandLineParser{
 		 -f [.*]		=> filename
 		-s [d | b]	=> search strategy : DEPTH_FIRST (profondeur) or BREADTH_FIRST (largeur)
 		-l [0-9]* 	=> max level of search
-		-u				=> if this parameter is present, uniqueness = false
+		-u	[0-9]*	=> uniqueness : number times that a node can be visited
 		 */
 		String fileName = "";
 		Search searchStrategy = Search.DEPTH_FIRST;
 		int searchLevel = -1;// by default we search in all the graph
-		boolean uniqueness = true; // a node cannot be visit more than one time by default
+		int uniqueness = 1; // a node cannot be visit more than one time by default
 		
 		if (args.length == 0){
 			System.out.println("There is no argument");
@@ -122,20 +118,25 @@ public class CommandLineParser{
 					parsingArgumentError = true;
 				}
 			}else if (argument.equals(ARGUMENT_UNIQUENESS)){
-				uniqueness = false;
+				if (isPositiveInteger(nextArgument)){
+					uniqueness = Integer.parseInt(nextArgument);
+					i++;
+				}else{
+					// error : argument value (for uniquenessl) not a positive integer
+					System.out.println("error argument not allowed '" + nextArgument + "' for '" + argument + "'");
+					parsingArgumentError = true;
+				}
 			}else{
 				// error argument not allowed
-				System.out.println("error argument not allowed '" + nextArgument + "'");
+				System.out.println("error argument not allowed '" + argument + "'");
 				parsingArgumentError = true;
 			}
 		}
 		
-		if (i < args.length){
+		if (i < args.length && !parsingArgumentError){
 			String lastArgument = args[i];
-			if (lastArgument.equals(ARGUMENT_UNIQUENESS)){
-				uniqueness = false;
-			}else if (lastArgument.equals(ARGUMENT_FILE_NAME) || lastArgument.equals(ARGUMENT_SEARCH_LEVEL)
-					|| lastArgument.equals(ARGUMENT_SEARCH_STRATEGY)){
+			if (lastArgument.equals(ARGUMENT_UNIQUENESS) || lastArgument.equals(ARGUMENT_FILE_NAME)
+					|| lastArgument.equals(ARGUMENT_SEARCH_LEVEL) || lastArgument.equals(ARGUMENT_SEARCH_STRATEGY)){
 				System.out.println("Missing argument value for '" + lastArgument + "'");
 				parsingArgumentError = true;
 			}else{
@@ -150,7 +151,8 @@ public class CommandLineParser{
 			graph = parser.parseFile(fileName);
 			
 			if (graph != null){
-				operation = new GraphSearch(graph,searchStrategy,searchLevel,uniqueness);
+				// TODO: remplacer la ligne ci-dessous par : operation = new GraphSearch(graph,searchStrategy,searchLevel,uniqueness);
+				operation = new GraphSearch(graph,searchStrategy,searchLevel,true);
 			}
 		}
 		
@@ -190,18 +192,14 @@ public class CommandLineParser{
 			if (request.equals(QUIT_REQUEST)){
 				continu = false;
 			}else if (request.equals(HELP_REQUEST)){
-				displayHelpMessage();
-			}else if (request.equals(REQUEST_HELP_REQUEST)){
 				displayRequestHelpMessage();
 			}else{
-				((GraphSearch)operation).setRequest(new Request(request));
-				Graph results = new Graph();
-				try {
-					results = ((GraphSearch)operation).execute();
-				} catch (MalFormedRequestException e) {
-					System.out.println("your request is not well formed, type '" + REQUEST_HELP_REQUEST + "' for help.");
-					e.printStackTrace();
-				}
+				
+				((GraphSearch)operation).setRequest(new Request());
+				ArrayList<Node> results = new ArrayList<Node>(1);
+				
+				results = ((GraphSearch)operation).execute(request);
+				
 				System.out.println("Results : ");
 				System.out.println(results);
 			}
@@ -211,42 +209,38 @@ public class CommandLineParser{
 	
 	/**
 	 * This method display a welcome message
-	 * TODO bufferiser la chaine et l'afficher avec un seul println car c'est super long d'écrire a l'écran et le prog perd le process sur une demande d'ecriture ( remarque florent )
 	 */
 	public void displayWelcomeMessage(){
-		System.out.println("Welcome to the Graph Search monitor.");
-		System.out.println("Your Graph Search connection id is " + (int)(Math.random() * 9 + 1));
-		System.out.println("Server version: 0.1 Source distribution\n");
-		
-		System.out.println("Copyright (c) 2013, CEGT and/or its affiliates. All rights reserved\n");
-		
-		System.out.println("Graph Search is a registered trademark of CEGT Corporation and/or its");
-		System.out.println("affiliates. Other names may be trademarks of their respective owners.");
-		
-		System.out.println("Type '" + HELP_REQUEST + "' for help.");
+		System.out.println("Welcome to the Graph Search monitor.\n" + "Your Graph Search connection id is " + (int)(Math.random() * 9 + 1)
+				+ "\n" + "Server version: 0.1 Source distribution\n" + "Copyright (c) 2013, CEGT and/or its affiliates. All rights reserved\n"
+				+ "Graph Search is a registered trademark of CEGT Corporation and/or its"
+				+ "affiliates. Other names may be trademarks of their respective owners." + "Type '" + HELP_REQUEST + "' for help.");
 	}
 	
 	/**
 	 * This method display an help message
-	 * TODO bufferiser la chaine et l'afficher avec un seul println car c'est super long d'écrire a l'écran et le prog perd le process sur une demande d'ecriture ( remarque florent )
 	 */
 	public void displayHelpMessage(){
-		System.out.println("\nCommand line arguments : ");
-		System.out.println(ARGUMENT_FILE_NAME + "\t<filename>\tFile path to the graph");
-		System.out.println(ARGUMENT_SEARCH_STRATEGY + "\t<" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST + "> or <"
-				+ ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + ">\tSearch Strategy ('" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST
-				+ "' for breadth first search, or '" + ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + "' for depth first search)");
-		System.out.println(ARGUMENT_SEARCH_LEVEL + "\t<level>\t\tMax search level (positive integer)");
-		System.out.println(ARGUMENT_UNIQUENESS
-				+ "\t\t\t\tUniqueness (if this parameter is present, a node can be passed several time during a search.)");
-		System.out.println(QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
+		System.out.println("\nCommand line arguments : \n" + ARGUMENT_FILE_NAME + "\t<filename>\tFile path to the graph\n"
+				+ ARGUMENT_SEARCH_STRATEGY + "\t<" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST + "> or <" + ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST
+				+ ">\tSearch Strategy ('" + ARGUMENT_SEARCH_STRATEGY_BREADTH_FIRST + "' for breadth first search, or '"
+				+ ARGUMENT_SEARCH_STRATEGY_DEPTH_FIRST + "' for depth first search)\n" + ARGUMENT_SEARCH_LEVEL
+				+ "\t<level>\t\tMax search level (positive integer)\n" + ARGUMENT_UNIQUENESS
+				+ "\t<level>\t\tUniqueness (positive integer), number times that a node can be visited\n");
 	}
 	
 	/**
-	 * This method display a request help message
+	 * This method display the request help message o
 	 */
 	public void displayRequestHelpMessage(){
-		System.out.println("\nTo make a well formed request, you need to have : \n\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n\t- nodeLabel\n\nYou can combine request with '&'\n\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\nYou can also see the entire graph with the request '*'");
+		System.out.println("\nTo make a well formed request, you need to have : \n"
+				+ "\t- nameOfTheLink\n\t- linkOrientation (optional) [<|>|-]\n"
+				+ "\t- [parameterName = value[,parameterName2 = value2]*]* (optional)\n" + "\t- nodeLabel\n\n"
+				+ "You can combine request with '&' or '|'\n" + "\tExemple : 'friend > paul & employee - (since = 1989) techCo'\n\n"
+				+ "'*' can replace any link tag or node name\n"
+				+ "You can also see the entire graph with the request '*'\n\nSpecial requests :\n\t" + HELP_REQUEST + " \t\t\t\tShow help\n\t"
+				+ QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
+		
 	}
 	
 	/**
@@ -257,7 +251,10 @@ public class CommandLineParser{
 	public static void main(String[] args){
 		CommandLineParser parser = new CommandLineParser();
 		if (!parser.parseArguments(args)){
+			parser.displayWelcomeMessage();
 			parser.listenRequest();
+		}else{
+			parser.displayHelpMessage();
 		}
 	}
 }

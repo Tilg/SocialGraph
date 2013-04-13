@@ -26,8 +26,8 @@ public class Link{
 	protected ArrayList<Property> properties;
 	
 	/**
-	 * Direction of a link if the graph is oriented: NONE If the destination node is the start of the link: OUT If the destination node is
-	 * the end of the link: IN
+	 * Direction of a link if the graph is oriented: NONE If the destination node is the start of the link: IN If the destination node is
+	 * the end of the link: OUT
 	 */
 	protected Direction direction;
 	
