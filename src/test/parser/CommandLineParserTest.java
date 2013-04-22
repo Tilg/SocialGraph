@@ -30,7 +30,7 @@ public class CommandLineParserTest{
 	
 	@Test
 	public void testParseArguments(){
-		String[] args = new String[7];
+		String[] args = new String[8];
 		args[0] = CommandLineParser.ARGUMENT_FILE_NAME;
 		args[1] = "graph.txt";
 		args[2] = CommandLineParser.ARGUMENT_SEARCH_STRATEGY;
@@ -38,6 +38,7 @@ public class CommandLineParserTest{
 		args[4] = CommandLineParser.ARGUMENT_SEARCH_LEVEL;
 		args[5] = "3";
 		args[6] = CommandLineParser.ARGUMENT_UNIQUENESS;
+		args[7] = "3";
 		
 		boolean parsingState = commandLineParser.parseArguments(args);
 		

@@ -146,8 +146,7 @@ public class Link{
 	}
 	
 	/**
-	 * This method can be used to compare 2 links.
-	 * Returns TRUE is the if the link given in parameter is equal to the instantiated link. 
+	 * This method can be used to compare 2 links. Returns TRUE is the if the link given in parameter is equal to the instantiated link.
 	 * 
 	 * @param link
 	 */
@@ -155,10 +154,10 @@ public class Link{
 	public boolean equals(Object link){
 		boolean is_equal = true;
 		
-		is_equal = is_equal && this.getLabel().equals(((Link) link).getLabel());
-		is_equal = is_equal && this.getDestination().equals(((Link) link).getDestination());
-		is_equal = is_equal && this.getProperties().equals(((Link) link).getProperties());
-		is_equal = is_equal && this.getDirection() == ((Link) link).getDirection();
+		is_equal = is_equal && getLabel().equals(((Link)link).getLabel());
+		is_equal = is_equal && getDestination().getLabel().equals(((Link)link).getDestination().getLabel());
+		is_equal = is_equal && getProperties().equals(((Link)link).getProperties());
+		is_equal = is_equal && getDirection() == ((Link)link).getDirection();
 		
 		return is_equal;
 	}
