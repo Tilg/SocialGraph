@@ -168,11 +168,19 @@ public class GraphSearch extends GraphOperation{
 		
 		for (int i =0; i< searchLevel;i++){ // loop on the search level, ex : friend of the friend of natasha, 1rst loop "friend natasha", 2nd loop "friend *" 
 				
+			System.out.println(tmp);//TODO
+			System.out.println("***");
+			for ( Node a : tmp){
+				System.out.println(a.getVisited());
+			}
+			System.out.println("***");
+			
 			if (i==0){// if we are in the first loop we just execute the request without the searchStrategy
 				
 				Node currentNode = getNodeFromList(nodeListe,targetNode);
 				
 				if (currentNode != null){
+					currentNode.setVisited(currentNode.getVisited()+1);// we update the number of visit of the node
 					tmp2.add(currentNode); //the current node is the node used in the request
 				}
 			}else{
@@ -187,7 +195,7 @@ public class GraphSearch extends GraphOperation{
 					
 				if (i == searchLevel-1){ //if the search level is >1, we make a recurtial filtering. if i ==searchLevel-1, it's the last time that we make the recursivity
 					
-					ArrayList<Node> filtredList = getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe);
+					ArrayList<Node> filtredList = getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp);
 					
 					if (searchStrategy == Search.DEPTH_FIRST){
 						listeRes.addAll(0,filtredList);
@@ -197,12 +205,17 @@ public class GraphSearch extends GraphOperation{
 						
 				}else{
 					if (searchStrategy == Search.DEPTH_FIRST){
-						tmp.addAll(0,getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe));
+						tmp.addAll(0,getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp));
 					}else{
-						tmp.addAll(getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe));
+						tmp.addAll(getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp));
 					}
 				}
-			}	
+			}
+			
+			Set<Node> set = new HashSet<Node>() ; 
+			set.addAll(tmp) ;
+			tmp = new ArrayList<Node>(set) ;
+			
 		}
 		return listeRes;
 	}
@@ -227,13 +240,14 @@ public class GraphSearch extends GraphOperation{
 	/** this method apply the link label filter,the direction filter, property filter and handle the uniqueness param
 	 *  
 	 * @param link, the label of the link in the request
-	 * @param direction , the direction filter 
+	 * @param direction , the direction filter
+	 * @param loopNodeList , the list of node already find during the loop
 	 * @param propertyList, the property list specify in the request
 	 * @param currentNodeLabel, the label of the node on which we apply filters
 	 * @param nodeList, the node list in which we check for nodes who match with the request
 	 * @return
 	 */
-	private ArrayList<Node> getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList) {
+	private ArrayList<Node> getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList, ArrayList<Node> loopNodeList) {
 		ArrayList<Node> listeRes = new ArrayList<Node>(1);
 		ArrayList<Link> linksListTmp = null;
 		
@@ -254,14 +268,16 @@ public class GraphSearch extends GraphOperation{
 							
 							Node targetNode = graph.getNode(linkTmp.getDestination().getLabel());
 							
-							if (searchStrategy == Search.DEPTH_FIRST){
-								listeRes.add(0,targetNode );
-							}else{
-								listeRes.add(targetNode);
+							if (!contains(loopNodeList,targetNode.getLabel())){ // if the node is not in the listRes
+							
+								if (searchStrategy == Search.DEPTH_FIRST){
+									listeRes.add(0,targetNode );
+								}else{
+									listeRes.add(targetNode);
+								}
+								
+								targetNode.setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
 							}
-							
-							targetNode.setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
-							
 						}
 					}
 				}
@@ -269,6 +285,27 @@ public class GraphSearch extends GraphOperation{
 		}
 		
 		return listeRes;
+	}
+
+
+	/**
+	 * this method check if a node with the label specify in parameter already exist in the list
+	 * @param listeRes, the list of node
+	 * @param label, the label of the node that we want to check the existance in the list
+	 * @return res, true if a node with the label label already exist in the list, false otherwise
+	 */
+	private boolean contains(ArrayList<Node> listeRes, String label) {
+		
+		boolean res = false;
+		
+		for ( Node node : listeRes){
+			if ( label.equals(node.getLabel())){
+				res = true;
+				break;
+			}
+		}
+		
+		return res;
 	}
 
 	/**
