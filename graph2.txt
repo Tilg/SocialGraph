@@ -16,7 +16,7 @@ DatabaseRefactoring--category-->Databases
 Databases<--category--NoSQL
 Carol--likes-->NoSQL
 Dawn--likes-->NoSQL
-Elisabeth--likes-->NoSQL
+Elizabeth--likes-->NoSQL
 Carol--friend-->Dawn
 Dawn--friend-->Jill
-Jill<--friend--Elisabeth
+Jill<--friend--Elizabeth

@@ -118,17 +118,36 @@ public class GraphSearch extends GraphOperation{
 		
 		// we get the common elements of all the list
 		res = resultList.get(0);
-		System.out.println(res.get(0).getLinks());
-		
 		if (resultList.size()>1){
-			for (int j=1;j<resultList.size();j++){
-				res.retainAll(resultList.get(j));
+			for (int j=1;j<resultList.size();j++){ // for each list of result
+				res = keepSameNode(res,resultList.get(j));
 			}
 		}
 
 		return res;
 	}
 	
+	/**
+	 * This method return the common node of the two list in parameter
+	 * @param list1, the first list of node
+	 * @param list2, the second list of node
+	 * @return res, the list of common nodes
+	 */
+	private ArrayList<Node> keepSameNode(ArrayList<Node> list1, ArrayList<Node> list2) {
+		ArrayList<Node> res = new ArrayList<Node>(1);
+		
+		for (Node tmpNode1 : list1){ // for each node of the first list
+			
+			for (Node tmpNode2 : list2){ // for each node of the second list
+				if (tmpNode1.equals(tmpNode2)){
+					res.add(tmpNode1);
+				}
+			}
+		}
+		
+		return res; 
+	}
+
 	/**
 	 * this method return an arraylist of node contains in the list in parameter, who match with the filters in parameters
 	 * @param link, the label of the link use as a filter

@@ -130,7 +130,7 @@ public class Node{
 		boolean is_equal = true;
 		
 		is_equal = is_equal && getLabel().equals(((Node)node).getLabel());
-		is_equal = is_equal && getLinks().equals(((Node)node).getLinks());
+		is_equal = is_equal && getLinks().equals(((Node)node).getLinks()); // the node label is unique, we don't need to cmpare the links
 
 		return is_equal;
 	}
