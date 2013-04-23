@@ -131,7 +131,7 @@ public class Node{
 		
 		is_equal = is_equal && getLabel().equals(((Node)node).getLabel());
 		is_equal = is_equal && getLinks().equals(((Node)node).getLinks());
-		
+
 		return is_equal;
 	}
 	

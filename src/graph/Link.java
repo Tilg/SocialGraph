@@ -162,6 +162,14 @@ public class Link{
 		
 		return is_equal;
 	}
+	
+	/**
+	 * used to print a link
+	 */
+	public String toString(){
+		
+		return label+" "+direction+" "+properties+" "+destination;
+	}
 
 	
 }

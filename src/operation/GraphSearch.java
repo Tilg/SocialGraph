@@ -8,6 +8,8 @@ import graph.Request;
 import graph.Search;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import parser.RequestParser;
 
@@ -53,13 +55,14 @@ public class GraphSearch extends GraphOperation{
 	public ArrayList<Node> execute(String typedRequest){
 		
 		ArrayList<Node> resultList= new ArrayList<Node>(1);
+		Set<Node> set; // we used a SET to remove the object in double in the list
 		
 		if (!RequestParser.checkRequest(typedRequest)) {
 			System.out.println("malformed request !\nTo have information on the request format use the command 'request help'");
 		}
 		else{ //if the request is wellformed
 			
-			//we reset the number of visit of each node of the graph to have a clean graph for each request
+			//we reset the number of visit of each node of the graph to have a clean graph for each request typed by the user
 			for (Node nodetmp : graph.getNodes().values()){
 				nodetmp.setVisited(0);
 			}
@@ -80,6 +83,10 @@ public class GraphSearch extends GraphOperation{
 					RequestParser.getFiltersFromRequest(request,subRequest); //we get the filters from the sub request
 					
 					resultList.addAll(getResultOfRequest()); // we add the result of the execution of the request to the result list 
+					
+					set = new HashSet<Node>() ; 
+					set.addAll(resultList) ;
+					resultList = new ArrayList<Node>(set) ;
 					
 					request = new Request(); // we reset the request filters
 				}
@@ -109,22 +116,12 @@ public class GraphSearch extends GraphOperation{
 			resultList.add(applyFilters(request.getLinkLabelList().get(i),request.getDirectionList().get(i),request.getPropertyList().get(i),request.getTargetNodeLabelList().get(i),graphNodeList));
 		}
 		
-		System.out.println();//TODO
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		for (ArrayList<Node> list : resultList){
-			System.out.println(list);
-		}
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		
 		// we get the common elements of all the list
 		res = resultList.get(0);
+		System.out.println(res.get(0).getLinks());
+		
 		if (resultList.size()>1){
-			for (int j=1;j<resultList.size();j++){ 
+			for (int j=1;j<resultList.size();j++){
 				res.retainAll(resultList.get(j));
 			}
 		}
@@ -236,13 +233,15 @@ public class GraphSearch extends GraphOperation{
 						int numberOfVisit = graph.getNodes().get(linkTmp.getDestination().getLabel()).getVisited();// we check the uniqueSearch Level
 						if (numberOfVisit<uniquenessSearch){ // if the node is visited less times that the uniquenessSearchLevel
 							
+							Node targetNode = graph.getNode(linkTmp.getDestination().getLabel());
+							
 							if (searchStrategy == Search.DEPTH_FIRST){
-								listeRes.add(0, linkTmp.getDestination());
+								listeRes.add(0,targetNode );
 							}else{
-								listeRes.add(linkTmp.getDestination());
+								listeRes.add(targetNode);
 							}
 							
-							linkTmp.getDestination().setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
+							targetNode.setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
 							
 						}
 					}
