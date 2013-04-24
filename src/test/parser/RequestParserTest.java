@@ -233,4 +233,26 @@ public class RequestParserTest {
 		
 	}
 	
+	
+	/**
+	 * this method test the method getElementsFromRequest using the '&' and '|' to parse
+	 */
+	@Test
+	public void testGetElementsFromRequest(){
+		String request1 = "friend Carole & friend Barbara";
+		String request2 = "friend Barbara | friend Carole";
+		
+		ArrayList<String> resRequest1 = RequestParser.getElementsFromRequest(request1, '&');
+		ArrayList<String> resRequest2 = RequestParser.getElementsFromRequest(request2, '|');
+		
+		ArrayList<String> assert1 = new ArrayList<String>(2);
+		assert1.add("friend Carole");
+		assert1.add("friend Barbara");
+		ArrayList<String> assert2 = new ArrayList<String>(2);
+		assert2.add("friend Barbara");
+		assert2.add("friend Carole");
+		
+		assertEquals(resRequest1,assert1);
+		assertEquals(resRequest2,assert2);
+	}
 }
