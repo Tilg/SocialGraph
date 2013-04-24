@@ -15,6 +15,11 @@ import parser.RequestParser;
  * @author omar & florent
  */
 public class GraphSearch extends GraphOperation{
+	
+	/**
+	 * this boolean can be set to true if you want to see all the step of the search algorithme
+	 */
+	protected final static boolean SHOW_ALGORITHME = false;
 	/**
 	 * Search Strategy for node search, insert or delete
 	 */
@@ -176,8 +181,6 @@ public class GraphSearch extends GraphOperation{
 			currentNode.setVisited(currentNode.getVisited()+1);// we update the number of visit of the node
 			tmp.get(0).add(currentNode); //the current node is the node used in the request is add to the level 0 of tmp list
 			
-			System.out.println(tmp);//TODO
-			
 			while(! end){ // while all the list are not empty
 				
 				currentNodeLabel = tmp.get(currentLevel).get(0).getLabel();//the current node is the first node of the list of the level where we are	
@@ -190,12 +193,21 @@ public class GraphSearch extends GraphOperation{
 						currentLevel ++;
 					}
 				}else{ //profondeur
-					if (currentLevel == 0){
-						currentLevel++;
+					if (currentLevel == (searchLevel-1)){ // if we are at the last level of tmp list and that this last list is empty
+						if ( tmp.get(currentLevel).size() == 0){
+							currentLevel--;
+						}
 					}
-//					else if (){ // TODO
-//						
-//					}
+					else{ 
+						if (tmp.get(currentLevel+1).size() > 0){ // if the next list is not empty, we go down in the shaft
+							currentLevel++;
+						}
+						else{ // if the next list of tmp is empty
+							if (tmp.get(currentLevel).size() == 0){ //if the next list and the current list are empty, we go up in the tree
+								currentLevel--;
+							}
+						}
+					}
 				}
 				
 				// we check that all the list are not empty, if they are, we have finish the research
@@ -207,8 +219,21 @@ public class GraphSearch extends GraphOperation{
 					}
 				}
 				
+				// this case occurs during a depth search when we finish a branch and that we need to up 2 level in a same time
+				if (searchStrategy == Search.DEPTH_FIRST && !end){ //if we have another node to examine but the current list is empty 
+					while(tmp.get(currentLevel).size() == 0){ // while we are in a empty list of tmp
+						currentLevel--;
+					}
+				}
 				
-				System.out.println(tmp);//TODO
+				if (SHOW_ALGORITHME){
+					System.out.println();
+					System.out.println(tmp);
+					System.out.println("***");
+					System.out.println(listeRes);
+					System.out.println("***");
+					System.out.println();
+				}
 			}
 		}
 		
@@ -230,6 +255,7 @@ public class GraphSearch extends GraphOperation{
 	private void getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList, ArrayList<ArrayList<Node>> tmp, ArrayList<Node> listeRes, int currentLevel) {
 		
 		ArrayList<Link> linksListTmp = null;
+		ArrayList<Node> nodeResultList = new ArrayList<Node>(1);
 		
 		for ( Node curentNode : nodeList){ //for each node in the nodeList in parameter
 			
@@ -254,7 +280,7 @@ public class GraphSearch extends GraphOperation{
 								}
 							}else{
 								if ( searchStrategy == Search.DEPTH_FIRST){ //profondeur
-									tmp.get(currentLevel+1).add(0, targetNode); // we add the node find in the next level of the tmp list at the beginning of the list
+									nodeResultList.add(targetNode); // we add the node find in the next level of the tmp list at the beginning of the list
 								}else{//largeur
 									tmp.get(currentLevel+1).add(targetNode); // we add the node find in the next level of the tmp list at the end of the list
 								}
@@ -265,6 +291,10 @@ public class GraphSearch extends GraphOperation{
 					}
 				}
 			}		
+		}
+		
+		if ( currentLevel < searchLevel-1 && searchStrategy == Search.DEPTH_FIRST){ //profondeur
+			tmp.get(currentLevel+1).addAll(0, nodeResultList); // we add the node find in the next level of the tmp list at the beginning of the list
 		}
 	}
 
