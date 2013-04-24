@@ -137,7 +137,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param list2, the second list of node
 	 * @return res, the list of common nodes
 	 */
-	private ArrayList<Node> keepSameNode(ArrayList<Node> list1, ArrayList<Node> list2) {
+	public ArrayList<Node> keepSameNode(ArrayList<Node> list1, ArrayList<Node> list2) {
 		ArrayList<Node> res = new ArrayList<Node>(1);
 		
 		for (Node tmpNode1 : list1){ // for each node of the first list
@@ -161,7 +161,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param nodeListe, the node who contains all the node already filtered
 	 * @return listeRes, the list of the node filtered
 	 */
-	private ArrayList<Node> applyFilters(String link, String direction,
+	public ArrayList<Node> applyFilters(String link, String direction,
 			ArrayList<Property> propertyList, String targetNode,
 			ArrayList<Node> nodeListe) {
 		
@@ -252,7 +252,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param nodeList, the node list in which we check for nodes who match with the request
 	 * @param currentLevel, the level where we are actualy exploring in the graph
 	 */
-	private void getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList, ArrayList<ArrayList<Node>> tmp, ArrayList<Node> listeRes, int currentLevel) {
+	public void getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList, ArrayList<ArrayList<Node>> tmp, ArrayList<Node> listeRes, int currentLevel) {
 		
 		ArrayList<Link> linksListTmp = null;
 		ArrayList<Node> nodeResultList = new ArrayList<Node>(1);
@@ -304,7 +304,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param targetNode, the label of the searched node
 	 * @return the node who have the label in param if he is in the list, null otherwise
 	 */
-	private Node getNodeFromList(ArrayList<Node> nodeListe, String targetNode) {
+	public Node getNodeFromList(ArrayList<Node> nodeListe, String targetNode) {
 		Node res =null;
 		for (Node nodeTmp : nodeListe){
 			if (nodeTmp.getLabel().equals(targetNode)){
@@ -322,7 +322,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param label, the label of the node that we want to check the existance in the list
 	 * @return res, true if a node with the label label already exist in the list, false otherwise
 	 */
-	private boolean contains(ArrayList<Node> listeRes, String label) {
+	public boolean contains(ArrayList<Node> listeRes, String label) {
 		
 		boolean res = false;
 		
@@ -342,7 +342,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param propertyList, the propertyList that we wan
 	 * @return boolean, true if the direction match with the direction of the link, else otherwise
 	 */
-	private boolean checkProperty(Link linkTmp, ArrayList<Property> propertyList) {
+	public boolean checkProperty(Link linkTmp, ArrayList<Property> propertyList) {
 		boolean res = false;
 		if (propertyList.size()==0){ // if we don't have a property filter in the request, the list of property in the link don't matter
 			res = true;
@@ -361,7 +361,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param direction, the direction that we wan
 	 * @return boolean, true if the direction match with the direction of the link, else otherwise
 	 */
-	private boolean checkDirection(Link linkTmp, String direction) {
+	public boolean checkDirection(Link linkTmp, String direction) {
 		
 		boolean res = false;
 		String linkDirection = linkTmp.getDirection().toString();
@@ -382,7 +382,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param nodeLabel, the label of the node research
 	 * @return the node in the tabe with the label in parameters
 	 */
-	private Node getAllFromNodeName(String nodeLabel) {
+	public Node getAllFromNodeName(String nodeLabel) {
 		Node resNode = new Node("");
 		
 		if (graph.getNodes().containsKey(nodeLabel)){

@@ -255,4 +255,19 @@ public class CommandLineParser{
 			parser.displayHelpMessage();
 		}
 	}
+	
+	/**
+	 * @return operation, the GraphOperation of this CommandeLineParser
+	 */
+	public GraphOperation getOperation() {
+		return operation;
+	}
+
+	/**
+	 * @return graph, the Graph with all the node and link
+	 */
+	public Graph getGraph() {
+		return graph;
+	}
+	
 }
