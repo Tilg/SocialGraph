@@ -8,8 +8,6 @@ import graph.Request;
 import graph.Search;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import parser.RequestParser;
 
@@ -55,7 +53,6 @@ public class GraphSearch extends GraphOperation{
 	public ArrayList<Node> execute(String typedRequest){
 		
 		ArrayList<Node> resultList= new ArrayList<Node>(1);
-		Set<Node> set; // we used a SET to remove the object in double in the list
 		
 		if (!RequestParser.checkRequest(typedRequest)) {
 			System.out.println("malformed request !\nTo have information on the request format use the command 'request help'");
@@ -82,11 +79,13 @@ public class GraphSearch extends GraphOperation{
 				{
 					RequestParser.getFiltersFromRequest(request,subRequest); //we get the filters from the sub request
 					
-					resultList.addAll(getResultOfRequest()); // we add the result of the execution of the request to the result list 
+					ArrayList<Node> result = getResultOfRequest();
 					
-					set = new HashSet<Node>() ; 
-					set.addAll(resultList) ;
-					resultList = new ArrayList<Node>(set) ;
+					for ( Node node : result){
+						if (!contains(resultList, node.getLabel())){
+							resultList.add(node);
+						}
+					}
 					
 					request = new Request(); // we reset the request filters
 				}
@@ -161,94 +160,75 @@ public class GraphSearch extends GraphOperation{
 			ArrayList<Property> propertyList, String targetNode,
 			ArrayList<Node> nodeListe) {
 		
-		ArrayList<Node> listeRes = new ArrayList<Node>(1);
-		ArrayList<Node> tmp = new ArrayList<Node>(1); // list used to handle the searchStrategy
-		ArrayList<Node> tmp2 = new ArrayList<Node>(1);
-		String currentNodeLabel="";
-		
-		for (int i =0; i< searchLevel;i++){ // loop on the search level, ex : friend of the friend of natasha, 1rst loop "friend natasha", 2nd loop "friend *" 
-				
-			System.out.println(tmp);//TODO
-			System.out.println("***");
-			for ( Node a : tmp){
-				System.out.println(a.getVisited());
-			}
-			System.out.println("***");
-			
-			if (i==0){// if we are in the first loop we just execute the request without the searchStrategy
-				
-				Node currentNode = getNodeFromList(nodeListe,targetNode);
-				
-				if (currentNode != null){
-					currentNode.setVisited(currentNode.getVisited()+1);// we update the number of visit of the node
-					tmp2.add(currentNode); //the current node is the node used in the request
-				}
-			}else{
-				tmp2=new ArrayList<Node>(tmp); //we create a new list
-				tmp.clear();//we drop all the element of tmplist to add new element of this loop
-			}
-			
-			while(tmp2.size()>0){
-				
-				currentNodeLabel = tmp2.get(0).getLabel();//the current node is the first node of the temporaly list
-				tmp2.remove(0); //we delete the node from the list
-					
-				if (i == searchLevel-1){ //if the search level is >1, we make a recurtial filtering. if i ==searchLevel-1, it's the last time that we make the recursivity
-					
-					ArrayList<Node> filtredList = getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp);
-					
-					if (searchStrategy == Search.DEPTH_FIRST){
-						listeRes.addAll(0,filtredList);
-					}else{
-						listeRes.addAll(filtredList);
-					}
-						
-				}else{
-					if (searchStrategy == Search.DEPTH_FIRST){
-						tmp.addAll(0,getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp));
-					}else{
-						tmp.addAll(getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp));
-					}
-				}
-			}
-			
-			Set<Node> set = new HashSet<Node>() ; 
-			set.addAll(tmp) ;
-			tmp = new ArrayList<Node>(set) ;
-			
+		ArrayList<Node> listeRes = new ArrayList<Node>(1);// the list return with all the node mathcing with the request
+		ArrayList<ArrayList<Node>> tmp = new ArrayList<ArrayList<Node>>(1); // tmp list used to explore the graph
+		for (int i=0; i<searchLevel;i++){
+			tmp.add(new ArrayList<Node>(1));
 		}
+		String currentNodeLabel="";
+		int currentLevel = 0; // used to memorise the level where we are during the research
+		boolean end = false;
+		
+		Node currentNode = getNodeFromList(nodeListe,targetNode);
+
+		if (currentNode != null){ // if the node in the request exist in the graph
+			
+			currentNode.setVisited(currentNode.getVisited()+1);// we update the number of visit of the node
+			tmp.get(0).add(currentNode); //the current node is the node used in the request is add to the level 0 of tmp list
+			
+			System.out.println(tmp);//TODO
+			
+			while(! end){ // while all the list are not empty
+				
+				currentNodeLabel = tmp.get(currentLevel).get(0).getLabel();//the current node is the first node of the list of the level where we are	
+				tmp.get(currentLevel).remove(0);//we delete the current node from his tmp list
+				getNodeFromFilters(link,direction,propertyList,currentNodeLabel,nodeListe,tmp,listeRes,currentLevel);
+				
+				//we update the current level
+				if ( searchStrategy == Search.BREADTH_FIRST){ //largeur
+					if (tmp.get(currentLevel).size() == 0){
+						currentLevel ++;
+					}
+				}else{ //profondeur
+					if (currentLevel == 0){
+						currentLevel++;
+					}
+//					else if (){ // TODO
+//						
+//					}
+				}
+				
+				// we check that all the list are not empty, if they are, we have finish the research
+				end = true; 
+				for (ArrayList<Node> list : tmp){
+					if ( list.size()>0){
+						end = false;
+						break;
+					}
+				}
+				
+				
+				System.out.println(tmp);//TODO
+			}
+		}
+		
 		return listeRes;
 	}
 
-	/**
-	 * this method is used to find a node in a node list using the label of the node
-	 * @param nodeListe, the list of node
-	 * @param targetNode, the label of the searched node
-	 * @return the node who have the label in param if he is in the list, null otherwise
-	 */
-	private Node getNodeFromList(ArrayList<Node> nodeListe, String targetNode) {
-		Node res =null;
-		for (Node nodeTmp : nodeListe){
-			if (nodeTmp.getLabel().equals(targetNode)){
-				res = nodeTmp;
-			}
-		}
-		
-		return res;
-	}
 
-	/** this method apply the link label filter,the direction filter, property filter and handle the uniqueness param
+	/** this method apply the link label filter,the direction filter, property filter and handle the uniqueness param.
 	 *  
 	 * @param link, the label of the link in the request
 	 * @param direction , the direction filter
-	 * @param loopNodeList , the list of node already find during the loop
+	 * @param tmp , the list of list of node already find
+	 * @param listeRes, the result list  
 	 * @param propertyList, the property list specify in the request
 	 * @param currentNodeLabel, the label of the node on which we apply filters
 	 * @param nodeList, the node list in which we check for nodes who match with the request
-	 * @return
+	 * @param currentLevel, the level where we are actualy exploring in the graph
 	 */
-	private ArrayList<Node> getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList, ArrayList<Node> loopNodeList) {
-		ArrayList<Node> listeRes = new ArrayList<Node>(1);
+	private void getNodeFromFilters(String link, String direction, ArrayList<Property> propertyList, String currentNodeLabel, ArrayList<Node> nodeList, ArrayList<ArrayList<Node>> tmp, ArrayList<Node> listeRes, int currentLevel) {
+		
 		ArrayList<Link> linksListTmp = null;
 		
 		for ( Node curentNode : nodeList){ //for each node in the nodeList in parameter
@@ -268,23 +248,41 @@ public class GraphSearch extends GraphOperation{
 							
 							Node targetNode = graph.getNode(linkTmp.getDestination().getLabel());
 							
-							if (!contains(loopNodeList,targetNode.getLabel())){ // if the node is not in the listRes
-							
-								if (searchStrategy == Search.DEPTH_FIRST){
-									listeRes.add(0,targetNode );
-								}else{
+							if (currentLevel == searchLevel-1){ //if we are in the last level, we add the node in the result list 
+								if ( ! contains(listeRes, targetNode.getLabel())){
 									listeRes.add(targetNode);
 								}
-								
-								targetNode.setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
-							}
+							}else{
+								if ( searchStrategy == Search.DEPTH_FIRST){ //profondeur
+									tmp.get(currentLevel+1).add(0, targetNode); // we add the node find in the next level of the tmp list at the beginning of the list
+								}else{//largeur
+									tmp.get(currentLevel+1).add(targetNode); // we add the node find in the next level of the tmp list at the end of the list
+								}
+							}	
+							
+							targetNode.setVisited(linkTmp.getDestination().getVisited()+1); // update of the visited flag
 						}
 					}
 				}
 			}		
 		}
+	}
+
+	/**
+	 * this method is used to find a node in a node list using the label of the node
+	 * @param nodeListe, the list of node
+	 * @param targetNode, the label of the searched node
+	 * @return the node who have the label in param if he is in the list, null otherwise
+	 */
+	private Node getNodeFromList(ArrayList<Node> nodeListe, String targetNode) {
+		Node res =null;
+		for (Node nodeTmp : nodeListe){
+			if (nodeTmp.getLabel().equals(targetNode)){
+				res = nodeTmp;
+			}
+		}
 		
-		return listeRes;
+		return res;
 	}
 
 
