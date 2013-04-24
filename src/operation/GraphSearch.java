@@ -137,7 +137,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param list2, the second list of node
 	 * @return res, the list of common nodes
 	 */
-	public ArrayList<Node> keepSameNode(ArrayList<Node> list1, ArrayList<Node> list2) {
+	public static ArrayList<Node> keepSameNode(ArrayList<Node> list1, ArrayList<Node> list2) {
 		ArrayList<Node> res = new ArrayList<Node>(1);
 		
 		for (Node tmpNode1 : list1){ // for each node of the first list
@@ -322,7 +322,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param label, the label of the node that we want to check the existance in the list
 	 * @return res, true if a node with the label label already exist in the list, false otherwise
 	 */
-	public boolean contains(ArrayList<Node> listeRes, String label) {
+	public static boolean contains(ArrayList<Node> listeRes, String label) {
 		
 		boolean res = false;
 		
