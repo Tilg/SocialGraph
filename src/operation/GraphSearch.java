@@ -342,7 +342,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param propertyList, the propertyList that we wan
 	 * @return boolean, true if the direction match with the direction of the link, else otherwise
 	 */
-	public boolean checkProperty(Link linkTmp, ArrayList<Property> propertyList) {
+	public static boolean checkProperty(Link linkTmp, ArrayList<Property> propertyList) {
 		boolean res = false;
 		if (propertyList.size()==0){ // if we don't have a property filter in the request, the list of property in the link don't matter
 			res = true;
@@ -361,7 +361,7 @@ public class GraphSearch extends GraphOperation{
 	 * @param direction, the direction that we wan
 	 * @return boolean, true if the direction match with the direction of the link, else otherwise
 	 */
-	public boolean checkDirection(Link linkTmp, String direction) {
+	public static boolean checkDirection(Link linkTmp, String direction) {
 		
 		boolean res = false;
 		String linkDirection = linkTmp.getDirection().toString();

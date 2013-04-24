@@ -1,7 +1,10 @@
 package test.parser;
 
 import static org.junit.Assert.assertEquals;
+import graph.Direction;
+import graph.Link;
 import graph.Node;
+import graph.Property;
 import graph.Request;
 
 import java.util.ArrayList;
@@ -339,6 +342,44 @@ public class GraphSearchTest {
 		
 		assertEquals(true,GraphSearch.contains(list1,"a"));
 		assertEquals(false,GraphSearch.contains(list1,"d"));
+	}
+	
+	/**
+	 * this method test the direction checking method
+	 */
+	@Test
+	public void testCheckDirection(){
+
+		Node a = new Node("a");
+
+		Link link = new Link("friend" , a, Direction.IN);
+		
+		assertEquals(true,GraphSearch.checkDirection(link, "<"));
+		assertEquals(false,GraphSearch.checkDirection(link, ">"));
+	}
+	
+	/**
+	 * this method test the property checking method
+	 */
+	@Test
+	public void testCheckProperty(){
+
+		Node a = new Node("a");
+		ArrayList<Property> prop =  new ArrayList<Property>(1);
+		ArrayList<String> values = new ArrayList<String>(1);
+		values.add("2000");
+		prop.add(new Property("since",values));
+
+		Link link = new Link("friend" , a, prop,Direction.IN);
+		
+		assertEquals(true,GraphSearch.checkProperty(link, prop));
+		
+		ArrayList<Property> prop2 =  new ArrayList<Property>(1);
+		ArrayList<String> values2 = new ArrayList<String>(1);
+		values2.add("1900");
+		prop2.add(new Property("since",values2));
+		
+		assertEquals(false,GraphSearch.checkProperty(link, prop2));
 	}
 
 }
