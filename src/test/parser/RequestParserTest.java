@@ -146,7 +146,7 @@ public class RequestParserTest {
 	 */
 	@Test
 	public void testMatching2(){
-		String typeRequest = "florent * & * > kad & * < (test =aaa) jaques & * *";
+		String typeRequest = "friend * & * > kad & * < (test =aaa) jaques & * *";
 		Request request = new Request();
 		RequestParser.getFiltersFromRequest(request,typeRequest);
 		
@@ -154,7 +154,7 @@ public class RequestParserTest {
 		
 		//list of link tags
 		ArrayList<String> linkTagsList = new ArrayList<String>(1);
-		linkTagsList.add("florent");
+		linkTagsList.add("friend");
 		linkTagsList.add("*");
 		linkTagsList.add("*");
 		linkTagsList.add("*");
@@ -196,4 +196,63 @@ public class RequestParserTest {
 		assertEquals(true,request.equals(request2));
 	}
 	
+	/**
+	 * this method test check if the request are well match
+	 */
+	@Test
+	public void testMatching3(){
+		String typeRequest = "friend Carole";
+		Request request = new Request();
+		RequestParser.getFiltersFromRequest(request,typeRequest);
+		
+		Request request2 = new Request();
+		
+		//list of link tags
+		ArrayList<String> linkTagsList = new ArrayList<String>(1);
+		linkTagsList.add("friend");
+		
+		//list of directions
+		ArrayList<String> directionList = new ArrayList<String>(1);
+		directionList.add("-");
+		
+		//list of property
+		ArrayList<ArrayList<Property>> propertyListOfAllPropertyList = new ArrayList<ArrayList<Property>>(1);
+		propertyListOfAllPropertyList.add(new ArrayList<Property>());
+		
+		//list of node label
+		ArrayList<String> nodeTagList = new ArrayList<String>(1);
+		nodeTagList.add("Carole");
+		
+		//we finish the request by setting the list
+		request2.setLinkLabelList(linkTagsList);
+		request2.setDirectionList(directionList);
+		request2.setPropertyList(propertyListOfAllPropertyList);
+		request2.setTargetNodeLabelList(nodeTagList);
+		
+		assertEquals(true,request.equals(request2));
+		
+	}
+	
+	
+	/**
+	 * this method test the method getElementsFromRequest using the '&' and '|' to parse
+	 */
+	@Test
+	public void testGetElementsFromRequest(){
+		String request1 = "friend Carole & friend Barbara";
+		String request2 = "friend Barbara | friend Carole";
+		
+		ArrayList<String> resRequest1 = RequestParser.getElementsFromRequest(request1, '&');
+		ArrayList<String> resRequest2 = RequestParser.getElementsFromRequest(request2, '|');
+		
+		ArrayList<String> assert1 = new ArrayList<String>(2);
+		assert1.add("friend Carole");
+		assert1.add("friend Barbara");
+		ArrayList<String> assert2 = new ArrayList<String>(2);
+		assert2.add("friend Barbara");
+		assert2.add("friend Carole");
+		
+		assertEquals(resRequest1,assert1);
+		assertEquals(resRequest2,assert2);
+	}
 }
