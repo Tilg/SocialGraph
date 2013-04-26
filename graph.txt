@@ -1,7 +1,0 @@
-Anna--employee_of[Role=Developer;hired=Mar 06]-->BigCo
-Barbara--employee_of[Role=Architect;hired=Feb 04]-->BigCo
-BigCo<--employee_of[Role=Research;hired=Oct 08]--Carol
-Carol<--friend[since=1999]--Barbara
-Barbara--friend[since=2011]-->Anna
-Carol--friend--Dawn
-Barbara--friend[since=1989;share=books,movies,tweets]-->Elizabeth
