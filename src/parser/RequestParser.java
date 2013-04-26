@@ -26,11 +26,11 @@ public class RequestParser{
 	/**
 	 * this patern is used to split the request into sub-request by parsing the OR symbol '|'
 	 */
-	public static final Pattern SUB_REQUEST_PATTERN = Pattern.compile("([^\\|]+)");
+	public static final Pattern ONE_ELEMENT_PATTERN = Pattern.compile("([^\\| ]+)");
 	/**
 	 * this matcher allow us to get the sub-sequences
 	 */
-	public static Matcher SUB_REQUEST_MATCHER;
+	public static Matcher ONE_ELEMENT_MATCHER;
 	
 	/**
 	 * this pattern is useful to get the informations of the different elements who composed the request 
@@ -74,9 +74,12 @@ public class RequestParser{
 	 * @return boolean, the result of the matching between the REQUEST_PATTERN and the request, true if the request is well formed, false otherwise
 	 */
 	public static boolean checkRequest(String request){
+		
 		REQUEST_MATCHER = REQUEST_PATTERN.matcher(request);
 		REQUEST_MATCHER.find();
 		String matchString = REQUEST_MATCHER.group();
+		
+		
 		return (matchString.length() == request.length()); // if the lenght of the string match is the same of the request typed, the entire request is ok
 	}
 

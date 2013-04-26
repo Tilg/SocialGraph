@@ -122,7 +122,7 @@ public class CommandLineParser{
 					uniqueness = Integer.parseInt(nextArgument);
 					i++;
 				}else{
-					// error : argument value (for uniquenessl) not a positive integer
+					// error : argument value (for uniqueness) not a positive integer
 					System.out.println("error argument not allowed '" + nextArgument + "' for '" + argument + "'");
 					parsingArgumentError = true;
 				}
@@ -151,8 +151,7 @@ public class CommandLineParser{
 			graph = parser.parseFile(fileName);
 			
 			if (graph != null){
-				// TODO: remplacer la ligne ci-dessous par : operation = new GraphSearch(graph,searchStrategy,searchLevel,uniqueness);
-				operation = new GraphSearch(graph,searchStrategy,searchLevel,true);
+				operation = new GraphSearch(graph,searchStrategy,searchLevel,uniqueness);
 			}
 		}
 		
@@ -188,7 +187,7 @@ public class CommandLineParser{
 		boolean continu = true;
 		while (continu){
 			System.out.println("\nEnter your request :");
-			String request = scanner.next();
+			String request = scanner.nextLine();
 			if (request.equals(QUIT_REQUEST)){
 				continu = false;
 			}else if (request.equals(HELP_REQUEST)){
@@ -240,7 +239,6 @@ public class CommandLineParser{
 				+ "'*' can replace any link tag or node name\n"
 				+ "You can also see the entire graph with the request '*'\n\nSpecial requests :\n\t" + HELP_REQUEST + " \t\t\t\tShow help\n\t"
 				+ QUIT_REQUEST + " \t\t\t\tQuit Graph Search monitor");
-		
 	}
 	
 	/**
@@ -257,4 +255,19 @@ public class CommandLineParser{
 			parser.displayHelpMessage();
 		}
 	}
+	
+	/**
+	 * @return operation, the GraphOperation of this CommandeLineParser
+	 */
+	public GraphOperation getOperation() {
+		return operation;
+	}
+
+	/**
+	 * @return graph, the Graph with all the node and link
+	 */
+	public Graph getGraph() {
+		return graph;
+	}
+	
 }
